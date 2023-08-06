@@ -1,0 +1,11 @@
+Day 1, august 5th 2023
+
+Wrote first draft of requirements/specification. Trying to get IO and
+hash table working. Tested basic functionality like insertion, true/
+false "contains" check, printing contents. Test frame will need 
+cleanup. Resizing needs to be implemented.
+
+Found this regex to use for syllable counting by Matt Ke on Stack 
+Overflow.
+
+/([aeiouyAEIOUY]+[^e.\s])|([aiouyAEIOUY]+\b)|(\b[^aeiouy0-9.']+e\b)/mg
