@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 
-#define INITIAL_SIZE 100
+#define INITIAL_SIZE 800
 #define MAX_PROBES 10
 
 struct hash_table {
@@ -23,9 +23,10 @@ struct hash_table {
 };
 
 /**
- * Returns a pointer to a newly allocated hashtable or NULL if allocation failed.
+ * Returns a pointer to a newly allocated hashtable or NULL if allocation 
+ * failed.
  **/
-struct hash_table *hashtable_create();
+struct hash_table *hashtable_create(size_t initial_size);
 
 /**
  * Inserts the string `s` to the hash table `ht`. Returns 1 on success and 0 

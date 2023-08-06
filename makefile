@@ -11,10 +11,9 @@ hash_table.o: hash_table.c hash_table.h
 trie.o: trie.c trie.h
 	gcc -c trie.c
 
-test_hash_table: hash_table_test.c hash_table.c hash_table.h
+test_ht: hash_table_test.c hash_table.c hash_table.h
 	gcc -o hash_table_test hash_table_test.c hash_table.c
 	./hash_table_test
 
 clean:
-	rm readability main.o hash_table.o trie.o
-	rm hash_table_test
+	rm readability main.o hash_table.o trie.o hash_table_test

@@ -23,13 +23,13 @@ unsigned int djb_hash(char * s)
     return hash;
 }
 
-struct hash_table *hashtable_create()
+struct hash_table *hashtable_create(size_t initial_size)
 {
 	struct hash_table *new_ht = calloc(1, 
-		sizeof(struct hash_table) + INITIAL_SIZE * sizeof(char *));
+		sizeof(struct hash_table) + initial_size * sizeof(char *));
 
-	new_ht->strings = calloc(INITIAL_SIZE, sizeof(char *));
-	new_ht->array_size = INITIAL_SIZE;
+	new_ht->strings = calloc(initial_size, sizeof(char *));
+	new_ht->array_size = initial_size;
 	new_ht->array_elems = 0;
 	new_ht->hash = djb_hash;
 }
@@ -46,12 +46,12 @@ int hashtable_insert(struct hash_table *ht, char * s)
 		if (probes == MAX_PROBES)
 		{
 			printf("Failed to add %s!\n", s);
-			return -1;
+			return 0;
 		}
 	}
 
 	ht->strings[s_index] = s;
-	return 0;
+	return 1;
 }
 
 int hashtable_remove(struct hash_table *ht, char * s)
@@ -113,7 +113,9 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 {
 	struct hash_table *new_ht = realloc(ht, sizeof(struct hash_table) + sizeof(char *) * size);
 	if (new_ht == NULL)
-		return NULL;
+	{
+		return ht;
+	}
 	ht = new_ht;
 	ht->strings = realloc(ht->strings, sizeof(char *) * size);
 	ht->array_size = size;
@@ -123,16 +125,22 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 {
 	unsigned int i = 0;
+	unsigned elems_printed = 0;
 
 	fprintf(fp, "[Index]: Content;\n");
 
 	for (i; i < ht->array_size; i++)
 	{
-		if ( (i % 2 == 0))
+		
+		if (ht->strings[i] != NULL)
 		{
-			fputc('\n', fp);
+			fprintf(fp, "[%d]: \"%s\";\t\t", i, ht->strings[i]);
+			elems_printed++;
+			if ( (elems_printed % 2 == 0))
+			{
+				fputc('\n', fp);
+			}
 		}
-		fprintf(fp, "[%d]: \"%s\";\t\t", i, ht->strings[i]);
 	}
 	fputc('\n', fp);
 

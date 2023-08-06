@@ -10,105 +10,117 @@
 #include "hash_table.h"
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 // Test case forward declarations
-void can_create();
-void can_insert();
-void can_find_word();
-void cannot_find_missing_word();
-void can_remove();
-void can_be_full();
-void can_resize();
+int can_create();
+int can_insert();
+int can_find_word();
+int cannot_find_missing_word();
+int can_remove();
+int can_be_full();
+int can_resize();
+
+typedef long nanosecond;
 
 // TODO: Reduce duplication of PASS/FAIL prints, put that in this function
 // by turning all the test functions above ^ to return int success or fail.
-void announce_test(int count, char * name/*, int result*/)
+void announce_test(int count, char * name, int test(void))
 {
+	
+	struct timespec res;
+	nanosecond before, after;
+
+	// Get the start time
+	clock_gettime(CLOCK_REALTIME, &res);
+	before = res.tv_nsec;
+
+	// Run the test and store pass/fail status
+	int result = (*test)();
+
+	// Get the completion time
+	clock_gettime(CLOCK_REALTIME, &res);
+	after = res.tv_nsec;
+
+	// Take the difference and divide by one million for milliseconds
+	nanosecond diff = after - before;
+
 	printf("\n\n\n========== TEST %d, %s ==========\n\n\n", count, name);
+	if (result == 1)
+	{
+		printf("PASSED IN %lu NS \n", diff);
+	}
 }
 
 int main(void)
 {
-	int test = 0;
+	int test_num = 0;
+	
 
-	announce_test(test, "Creating a HT"); test++;
-	can_create();
 
-	announce_test(test, "Can insert string"); test++;
-	can_insert();
+	announce_test(test_num, "Creating a HT", &can_create); 
+	test_num++;
 
-	announce_test(test, "Can check if HT contains string"); test++;
-	can_find_word();
+	announce_test(test_num, "Can insert string", &can_create); 
+	test_num++;
 
-	announce_test(test, "Can check if HT does not contain string"); test++;
-	cannot_find_missing_word();
+	announce_test(test_num, "Can check if HT contains string", 	&can_find_word); 
+	test_num++;
 
-	announce_test(test, "Can remove string from HT"); test++;
-	can_remove();
+	announce_test(test_num, "Can check if HT does not contain string", &cannot_find_missing_word); 
+	test_num++;
 
-	announce_test(test, "100 strings can be inserted to HT"); test++;
-	can_be_full();
+	announce_test(test_num, "Can remove string from HT", &can_remove); 
+	test_num++;
 
-	announce_test(test, "Can resize list"); test++;
-	can_resize();
+	announce_test(test_num, "100 strings can be inserted to HT", &can_be_full); 
+	test_num++;
+
+	announce_test(test_num, "Can resize list", &can_resize); 
+	test_num++;
 }
 
 // Test case definitions
-void can_create()
+int can_create()
 {
-	struct hash_table *ht = hashtable_create();
+	struct hash_table *ht = hashtable_create(10);
 	hashtable_print_contents(ht, stdout);
+	return 1;
 }
 
-void can_insert()
+int can_insert()
 {
-	struct hash_table *ht = hashtable_create();
+	struct hash_table *ht = hashtable_create(10);
 	char *word = calloc(5 + 1, sizeof(char));
 	strcpy(word, "Hello");
 	hashtable_insert(ht, word);
 	hashtable_print_contents(ht, stdout);
+	return 1;
 }
 
-void can_find_word()
+int can_find_word()
 {
-	struct hash_table *ht = hashtable_create();
+	struct hash_table *ht = hashtable_create(10);
 	char *word = calloc(5 + 1, sizeof(char));
 	strcpy(word, "Hello");
 	hashtable_insert(ht, word);
-	int found_word = hashtable_contains(ht, "Hello");
-	if (found_word == 1)
-	{
-		printf("\nPASS!\n");
-	}
-	else
-	{
-		printf("\nFAILED!\n");
-	}
+	return hashtable_contains(ht, "Hello");
 }
 
-void cannot_find_missing_word()
+int cannot_find_missing_word()
 {
-	struct hash_table *ht = hashtable_create();
+	struct hash_table *ht = hashtable_create(10);
 	char *word = calloc(5 + 1, sizeof(char));
 	strcpy(word, "Hello");
 	hashtable_insert(ht, word);
-
-	int found_word = hashtable_contains(ht, "Boots");
-	if (found_word == 0)
-	{
-		printf("\nPASS!\n");
-	}
-	else
-	{
-		printf("\nFAILED!\n");
-	}
+	return (!hashtable_contains(ht, "Boots"));
 }
 
-void can_be_full()
+int can_be_full()
 {
-	struct hash_table *ht = hashtable_create();
+	struct hash_table *ht = hashtable_create(200);
 
-	const char* words[100] = {
+	char* words[100] = {
 		"apple", "banana", "orange", "grape", "pineapple", "kiwi", "mango", 
 		"pear", "watermelon", "strawberry", "peach", "blueberry", "cherry", 
 		"apricot", "raspberry", "plum", "lemon", "lime", "coconut", 
@@ -126,48 +138,36 @@ void can_be_full()
 		"clementine", "blood orange", "white sapote", "breadnut", "jabuticaba", 
 		"white currant", "golden kiwi", "green sapote", "redcurrant", 
 		"miracle fruit", "green sapote", "honeyberry", "tayberry", "yumberry", 
-		"ziziphus", "acai", "safou", "breadnut", "damson plum", "gac", 
-		"carambola", "quandong", "guava", "lingonberry", "gooseberry"
+		"ziziphus", "acai", "safou", "breadnut", "gooseberry"
 	};
+
+	unsigned int successful_adds = 0;
 
 	for (int i = 0; i < 100; i++)
 	{
-		hashtable_insert(ht, words[i]);
+		successful_adds += (hashtable_insert(ht, words[i]));
 	}
 
+	printf("%d words of 100 added.\n", successful_adds);
+
 	hashtable_print_contents(ht, stdout);
+
+	return 1;
 }
 
-void can_remove()
+int can_remove()
 {
-	struct hash_table *ht = hashtable_create();
+	struct hash_table *ht = hashtable_create(10);
 	char *word = calloc(5 + 1, sizeof(char));
 	strcpy(word, "Hello");
 	hashtable_insert(ht, word);
 	hashtable_remove(ht, word);
-	if (!hashtable_contains(ht, word))
-	{
-		printf("Passed!\n");
-	}
-	else
-	{
-		printf("Failed!\n");
-	}
+	return (!hashtable_contains(ht, word));
 }
 
-void can_resize()
+int can_resize()
 {
-	struct hash_table *ht = hashtable_create();
-
-	ht = hashtable_resize(ht, 2 * INITIAL_SIZE);
-	printf("Size now %d\n", ht->array_size);
-
-	/*ht = hashtable_resize(ht, 2 * ht->array_size);
-	printf("Size now %d\n", ht->array_size);
-
-	ht = hashtable_resize(ht, 2 * ht->array_size);
-	printf("Size now %d\n", ht->array_size);
-	*/
+	struct hash_table *ht = hashtable_create(10);
 
 	hashtable_insert(ht, "Hello");
 	hashtable_insert(ht, "Bello");
@@ -175,7 +175,17 @@ void can_resize()
 	hashtable_insert(ht, "Yello");
 	hashtable_insert(ht, "Sello");
 
-	// Segfaults at i == 100... array member alloc issue?
+	ht = hashtable_resize(ht, 100);
+	printf("Size now %d\n", ht->array_size);
+
 	hashtable_print_contents(ht, stdout);
 
+	ht = hashtable_resize(ht, 200);
+	printf("Size now %d\n", ht->array_size);
+
+	hashtable_print_contents(ht, stdout);
+
+	hashtable_print_contents(ht, stdout);
+
+	return (ht->array_size = 2 * INITIAL_SIZE);
 }
