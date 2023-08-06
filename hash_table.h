@@ -19,7 +19,7 @@ struct hash_table {
 	unsigned int array_size;
 	unsigned int array_elems;
 	unsigned int (*hash)(char *);
-	char *strings[];
+	char **strings;
 };
 
 /**

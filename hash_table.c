@@ -28,6 +28,7 @@ struct hash_table *hashtable_create()
 	struct hash_table *new_ht = calloc(1, 
 		sizeof(struct hash_table) + INITIAL_SIZE * sizeof(char *));
 
+	new_ht->strings = calloc(INITIAL_SIZE, sizeof(char *));
 	new_ht->array_size = INITIAL_SIZE;
 	new_ht->array_elems = 0;
 	new_ht->hash = djb_hash;
@@ -113,7 +114,6 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 	struct hash_table *new_ht = realloc(ht, sizeof(struct hash_table) + sizeof(char *) * size);
 	if (new_ht == NULL)
 		return NULL;
-	//realloc(ht->strings, sizeof(char *) * size);
 	ht = new_ht;
 	ht->strings = realloc(ht->strings, sizeof(char *) * size);
 	ht->array_size = size;
