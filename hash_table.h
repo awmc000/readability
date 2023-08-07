@@ -6,14 +6,14 @@
  * Alex McColm
  *
  * Hash table for quick access to strings for comparison.
- */
+ **/
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
 #include <stdio.h>
 
 #define INITIAL_SIZE 800
-#define MAX_PROBES 10
+#define MAX_PROBES 20
 
 struct hash_table {
 	unsigned int array_size;
@@ -37,20 +37,27 @@ int hashtable_insert(struct hash_table *ht, char * s);
 /**
  * Removes the string `s` from the hash_table `ht`. Returns 1 if found and 
  * removed and 0 if not found.
- */
+ **/
 int hashtable_remove(struct hash_table *ht, char * s);
 
 /**
  * Removes the string `s` from the hash_table `ht`. Returns 1 if found and 0
  * if not found.
- */
+ **/
 int hashtable_contains(struct hash_table *ht, char * search_key);
 
 /**
  * Resize the hash table to the specified size.
  * Uses the C library function `realloc()`.
- */
+ **/
 struct hash_table *hashtable_resize(struct hash_table *ht, size_t size);
+
+/**
+ * Loads all words from the file stream `fp` to EOF. A word is a series of
+ * chars containing letters of the alphabet or numbers, and possibly hyphens.
+ * Eg. "Hello", "1945", "3rd", "tip-top".  
+ **/
+int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp);
 
 /**
  * Prints the contents of the hash table to the given file pointer.

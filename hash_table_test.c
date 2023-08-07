@@ -11,6 +11,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
+#include <regex.h>
 
 // Test case forward declarations
 int can_create();
@@ -20,6 +22,7 @@ int cannot_find_missing_word();
 int can_remove();
 int can_be_full();
 int can_resize();
+int can_load_file();
 
 typedef long nanosecond;
 
@@ -77,6 +80,9 @@ int main(void)
 	test_num++;
 
 	announce_test(test_num, "Can resize list", &can_resize); 
+	test_num++;
+
+	announce_test(test_num, "Can load Dale's 769 easy words from file", &can_load_file); 
 	test_num++;
 }
 
@@ -188,4 +194,54 @@ int can_resize()
 	hashtable_print_contents(ht, stdout);
 
 	return (ht->array_size = 2 * INITIAL_SIZE);
+}
+
+int can_load_file()
+{
+	FILE *f_dale_list = fopen("dale list of 769 easy words", "r");
+
+	// set up buffer for file
+	char * buf_line = calloc(256, sizeof(char));
+	size_t buf_size;
+
+	char ** word_array = calloc(3000, sizeof(char *));
+	int words = 0;
+
+	// set up word regex pattern
+	regex_t word_re;
+
+	int word_comp = regcomp(&word_re, "[0-9A-Za-z]+", REG_EXTENDED);
+	
+	assert(word_comp == 0);
+
+	while ( getline(&buf_line, &buf_size, f_dale_list) != -1 )
+	{
+		// get words from line
+		regmatch_t matches[32];
+
+		word_comp = regexec(&word_re, buf_line,
+							sizeof(matches) / sizeof(matches[0]),
+							(regmatch_t *) &matches, 0);
+		// allocate string
+		char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
+		
+		for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
+		{
+			this_word[i] = buf_line[i];
+		}
+		// put in word array
+		word_array[words] = this_word;
+		words++;
+	}
+
+	struct hash_table *dale_ht = hashtable_create(3000);
+
+	for (int i = 0; i < words; i++)
+	{
+		hashtable_insert(dale_ht, word_array[i]);
+	}
+
+	hashtable_print_contents(dale_ht, stdout);
+
+	return 1;
 }

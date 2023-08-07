@@ -51,6 +51,7 @@ int hashtable_insert(struct hash_table *ht, char * s)
 	}
 
 	ht->strings[s_index] = s;
+	ht->array_elems++;
 	return 1;
 }
 
@@ -69,6 +70,7 @@ int hashtable_remove(struct hash_table *ht, char * s)
 		{
 			free(s);
 			ht->strings[s_index] = NULL;
+			ht->array_elems--;
 			return 1;
 		}
 
@@ -120,6 +122,12 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 	ht->strings = realloc(ht->strings, sizeof(char *) * size);
 	ht->array_size = size;
 	return ht;
+}
+
+int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp)
+{
+	// TODO: implement
+	return 0;
 }
 
 void hashtable_print_contents(struct hash_table *ht, FILE *fp)
