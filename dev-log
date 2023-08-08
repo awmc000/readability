@@ -1,4 +1,4 @@
-Day 1, august 5th 2023
+# Day 1, august 5th 2023
 
 Wrote first draft of requirements/specification. Trying to get IO and
 hash table working. Tested basic functionality like insertion, true/
@@ -9,3 +9,33 @@ Found this regex to use for syllable counting by Matt Ke on Stack
 Overflow.
 
 /([aeiouyAEIOUY]+[^e.\s])|([aiouyAEIOUY]+\b)|(\b[^aeiouy0-9.']+e\b)/mg
+
+# Day 2, August 6th 2023
+
+Further work on the hash table. Resize working great after switching 
+from flexible array member to double pointer. Successfully loaded the
+Dale list of "769" (actually, close to 1500) easy words into a hash
+table using a regex to recognize where a word starts and ends. The 
+regular expression was definitely overkill for a file where words are
+separated by newlines without even hypens. isalpha() would have been
+enough, but I wanted to test this regex too. It will be used to pull
+words from lines of text given by the user.
+
+Lorge's description of the Readability Index seems to call for a set.
+
+	" Since the count is the number of differ-
+	ent hard words, each hard word is
+	counted only once. For instance, if in
+	the passage 'reliability' occurred three
+	times, it still would be counted only
+	once. "
+
+This makes me think of a set, but I could probably just modify the 
+hash table to have a parameter that forces entries to be unique, 
+rejecting strings that are already contained.
+
+# Day 3, August 7th 2023
+
+Successfully loading the Dale list into a hash table in `main.c`. It
+seems that regex isn't the right solution for counting words and 
+sentences. I should do it with simple char checking and counting.
