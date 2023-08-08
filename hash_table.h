@@ -57,7 +57,7 @@ struct hash_table *hashtable_resize(struct hash_table *ht, size_t size);
  * chars containing letters of the alphabet or numbers, and possibly hyphens.
  * Eg. "Hello", "1945", "3rd", "tip-top".  
  **/
-int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp);
+int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_words);
 
 /**
  * Prints the contents of the hash table to the given file pointer.

@@ -10,6 +10,8 @@
 #include "hash_table.h"
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+#include <regex.h>
 
 // DJB hash function by Dan Bernstein of the usergroup "comp.lang.c".
 unsigned int djb_hash(char * s)
@@ -124,10 +126,61 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 	return ht;
 }
 
-int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp)
+int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_words)
 {
-	// TODO: implement
-	return 0;
+	if (fp == NULL)
+	{
+		printf("Cannot load a null file pointer!\n");
+	}
+
+	// set up buffer for file
+	char * buf_line = calloc(256, sizeof(char));
+	size_t buf_size;
+
+	char ** word_array = calloc(num_words * 2, sizeof(char *));
+
+	if (word_array == NULL)
+	{
+		printf("Failed to allocate word_array for %lu words!", num_words);
+	}
+
+	int words = 0;
+
+	// set up word regex pattern
+	regex_t word_re;
+
+	int word_comp = regcomp(&word_re, "[0-9A-Za-z]+", REG_EXTENDED);
+	
+	assert(word_comp == 0);
+
+	while ( getline(&buf_line, &buf_size, fp) != -1 )
+	{
+		// get words from line
+		regmatch_t matches[1];
+
+		word_comp = regexec(&word_re, buf_line,
+							sizeof(matches) / sizeof(matches[0]),
+							(regmatch_t *) &matches, 0);
+		
+		// allocate string
+		char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
+		
+		for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
+		{
+			this_word[i] = buf_line[i];
+		}
+		
+		// put in word array
+		word_array[words] = this_word;
+		words++;
+	}
+
+	for (int i = 0; i < words; i++)
+	{
+		hashtable_insert(ht, word_array[i]);
+	}
+
+	return 1;
 }
 
 void hashtable_print_contents(struct hash_table *ht, FILE *fp)
