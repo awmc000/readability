@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "hash_table.h"
+#include "io.h"
 
 void handle_load(int load_success, const char *desc)
 {
@@ -51,19 +52,6 @@ void assess_readability(FILE *text_file)
 
 	hashtable_print_contents(prepositions, stdout);
 
-	// Compile regular expression(s).
-	const char * sentence_pattern = "[.;?!]+"; //"\\b((?!=|\\.).)+.\\b";
-	const char * word_pattern = "[A-Z]{0,1}[a-z0-9]+";
-
-	regex_t sentence_re;
-	regex_t word_re;
-
-	int sent_exp_comp = regcomp(&sentence_re, sentence_pattern, REG_EXTENDED);
-	int word_exp_comp = regcomp(&word_re, word_pattern, REG_EXTENDED);
-
-	assert(sent_exp_comp == 0);
-	assert(word_exp_comp == 0);
-
 	// Track the number of sentences by counting their ending punctuation.
 	// Compute the average length of a sentence in words.
 	// Track the number of words which are not on the easy word list.
@@ -74,28 +62,62 @@ void assess_readability(FILE *text_file)
 	size_t buf_size;
 
 	
+	int total_sentences = 0;
+	int total_words = 0;
+
+	int sentences = 0;
+	int words = 0;
+
+	int easy_words_count = 0;
+	int prepositions_count = 0;
+
+	// Count sentences and words.
 	while ( getline(&buf_line, &buf_size, text_file) != -1 )
 	{
+		// print the line
 		puts(buf_line);
-		// Get sentence ends on this line.
-		regmatch_t sentence_end_match;
 
+		// count sentences and words in the line
+		sentences = count_sentences(buf_line);
+		words = count_words(buf_line);
+		printf("%d words and %d sentences.\n", words, sentences);
+		
+		// add to text totals
+		total_sentences += sentences;
+		total_words += words;
 
-		// Count of matches
-	    size_t match_count = 0;
+		// put words in a special array
+		size_t num_words = words;
+		char ** word_arr = calloc(2 * words, sizeof(char *));
+		size_t *word_arr_elems;
 
-	    // Perform the match
-	    regmatch_t match;
-	    int input_offset = 0;
-	    while (regexec(&sentence_re, buf_line + input_offset, 1, &sentence_end_match, 0) == 0) {
-	        match_count++;
-	        input_offset += match.rm_eo;  // Move to the end of the matched substring
-	    }
+		int array_creation_success = words_array_from_string(buf_line, 
+			num_words, word_arr);
 
-		printf("%lu sentences\n", match_count);
+		for (unsigned int i = 0; i < words; i++)
+		{
+			printf("[%d]: \"%s\"\n", i, word_arr[i]);
+
+			// Check if this word is an easy word
+			if (hashtable_contains(easy_words, word_arr[i]))
+			{
+				printf("%s is an easy word.\n", word_arr[i]);
+				easy_words_count++;
+			}
+
+			// Check if this word is a preposition
+			if (hashtable_contains(prepositions, word_arr[i]))
+			{
+				printf("%s is a preposition.\n", word_arr[i]);
+				prepositions_count++;
+			}
+		}
 	}
 
-	regfree(&sentence_re);
+	
+	printf("%d easy words of %d words and %d prepositions in %d sentences.\n", 
+		easy_words_count, total_words, prepositions_count, total_sentences);
+	printf("%f average words per sentence.\n", (float) total_words / total_sentences);
 }
 
 int main(int argc, char *argv[])
