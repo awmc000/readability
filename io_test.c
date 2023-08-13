@@ -10,6 +10,7 @@
 #include "io.h"
 #include "test_utils.h"
 #include <assert.h>
+#include <stdlib.h>
 
 // Test case forward declarations
 int can_count_zero_words();
@@ -20,6 +21,8 @@ int can_count_split_word_as_one();
 int can_count_zero_sentences();
 int can_count_one_sentence();
 int can_count_split_sentences();
+
+int can_get_words_from_string();
 
 
 int main(void)
@@ -50,6 +53,10 @@ int main(void)
 
 	announce_test(test_num, "Can count split sentences",
 		can_count_split_sentences);
+	test_num++;
+
+	announce_test(test_num, "Can get word array from string",
+		can_get_words_from_string);
 	test_num++;
 
 	return 0;
@@ -105,4 +112,22 @@ int can_count_split_sentences()
 	int result = count_sentences(s);
 	printf("sentence count of \"%s\" == %d\n", s, result);
 	return (result == 2);
+}
+
+int can_get_words_from_string()
+{
+	char * s = "Nova is the love of my life"; // 7 words
+	size_t num_words = 7;
+	char ** s_array = calloc(20, sizeof(char *));
+
+	int array_made = words_array_from_string(s, num_words, s_array);
+
+	printf("%ld\n", num_words);
+
+	for (int i = 0; i < num_words; i++)
+	{
+		 printf("%s\n", s_array[i]);
+	}
+
+	return 1;
 }

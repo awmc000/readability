@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <regex.h>
 #include <ctype.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <assert.h>
 
 int count_words(char * s)
 {
@@ -11,7 +15,7 @@ int count_words(char * s)
 
 	for (unsigned int i = 0; i < strlen(s); i++)
 	{
-		if (isalpha(s[i]))
+		if (isalpha(s[i]) || isdigit(s[i]) || s[i] == '-' || s[i] == '\'')
 		{
 			if (!started)
 			{
@@ -62,4 +66,111 @@ int count_sentences(char * s)
 	}
 
 	return count;
+}
+
+int words_array(FILE * fp, size_t num_words, char ** s_array)
+{
+	if (fp == NULL)
+	{
+		printf("Cannot load a null file pointer!\n");
+		return 0;
+	}
+
+	// set up buffer for file
+	char * buf_line = calloc(256, sizeof(char));
+	size_t buf_size;
+
+	//s_array = calloc(2 * num_words, sizeof(char *));
+
+	if (s_array == NULL)
+	{
+		printf("Failed to allocate s_array for %lu words!", num_words);
+		return 0;
+	}
+
+	// set up word regex pattern
+	regex_t word_re;
+
+	int words_counted = 0;
+
+	int word_comp = regcomp(&word_re, "[0-9A-Za-z]+", REG_EXTENDED);
+	
+	assert(word_comp == 0);
+
+	while ( getline(&buf_line, &buf_size, fp) != -1 )
+	{
+		// get words from line
+		regmatch_t matches[1];
+		int offset = 0;
+
+		while ( (word_comp = regexec(&word_re, buf_line + offset,
+							sizeof(matches) / sizeof(matches[0]),
+							(regmatch_t *) &matches, 0)) == 0)
+		{
+			// allocate string
+			char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
+			
+			// record its length
+			int this_word_len = 0;
+
+			// copy each char over to `this_word`
+			for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
+			{
+				this_word[this_word_len] = tolower(buf_line[i]);
+				this_word_len++;
+			}
+			this_word[this_word_len] = '\0';
+			
+			// put in word array
+			printf("%s\n", this_word);
+			s_array[words_counted] = this_word;
+			words_counted++;
+			buf_line += matches[0].rm_eo + 1;
+		}
+	}
+
+	return 1;
+}
+
+int words_array_from_string(char * s, size_t num_words, char ** s_array)
+{
+	// set up word regex pattern
+	regex_t word_re;
+
+	int words_counted = 0;
+
+	int word_comp = regcomp(&word_re, "[0-9A-Za-z]+", REG_EXTENDED);
+	
+	assert(word_comp == 0);
+		
+	// get words from line
+	regmatch_t matches[1];
+	int offset = 0;
+
+	while ( (word_comp = regexec(&word_re, s + offset,
+						sizeof(matches) / sizeof(matches[0]),
+						(regmatch_t *) &matches, 0)) == 0)
+	{
+		// allocate string
+		char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
+		
+		// record its length
+		int this_word_len = 0;
+
+		// copy each char over to `this_word`
+		for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
+		{
+			this_word[this_word_len] = tolower(s[i]);
+			this_word_len++;
+		}
+		this_word[this_word_len] = '\0';
+			
+		// put in word array
+		printf("%s\n", this_word);
+		s_array[words_counted] = this_word;
+		words_counted++;
+		s += matches[0].rm_eo + 1;
+	}
+
+	return 1;
 }
