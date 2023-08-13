@@ -1,9 +1,10 @@
-main : main.o hash_table.o trie.o
-	gcc -o readability main.o hash_table.o trie.o -g
+main : main.o hash_table.o trie.o test_utils.o io.o
+	gcc -o readability main.o hash_table.o trie.o io.o -g
 	./readability test-text
 
-debug: main.c hash_table.c hash_table.h trie.c trie.h test_utils.h
-	gcc -o debug -g main.c hash_table.c trie.c
+debug: main.c hash_table.c hash_table.h trie.c trie.h test_utils.h test_utils.c io.h io.c
+	gcc -o debug -g main.c hash_table.c trie.c test_utils.c io.c
+
 main.o: main.c
 	gcc -c main.c -g
 
@@ -13,9 +14,19 @@ hash_table.o: hash_table.c hash_table.h
 trie.o: trie.c trie.h
 	gcc -c trie.c -g
 
-test_ht: hash_table_test.c hash_table.c hash_table.h test_utils.h
-	gcc -o hash_table_test hash_table_test.c hash_table.c -g
-	./hash_table_test
+test_utils.o: test_utils.c test_utils.h
+	gcc -c test_utils.c
+
+io.o: io.h io.c
+	gcc -c io.c
+
+test_ht: hash_table_test.c hash_table.c hash_table.h test_utils.h test_utils.c
+	gcc -o test_ht hash_table_test.c hash_table.c test_utils.c -g
+	./test_ht
+
+test_io: io.c io.h io_test.c test_utils.c test_utils.h
+	gcc -g -o test_io io.c io_test.c test_utils.c
+	./test_io
 
 clean:
-	rm readability main.o hash_table.o trie.o hash_table_test
+	rm -f readability main.o hash_table.o trie.o test_ht test_io
