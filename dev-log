@@ -39,3 +39,26 @@ rejecting strings that are already contained.
 Successfully loading the Dale list into a hash table in `main.c`. It
 seems that regex isn't the right solution for counting words and 
 sentences. I should do it with simple char checking and counting.
+
+Created the "io" module on this day.
+
+# Day 4, August 9th 2023
+
+Successfully counting words, sentences, easy words, and prepositions
+in the test text file! Worked out some simple problems I had with
+putting words in an array.
+
+# Day 5, August 12th 2023
+
+Got the text analysis in main.c to evaluate line by line rather than
+trying to load the whole file into dynamic memory which wasn't 
+working. I have been thinking about it for a few days though, and 
+am thinking I needed to discard the Lorge formula completely. It's a
+waste of time! Dale-Chall is much more computer friendly, and it's
+what wordcounter uses anyways!
+
+# Day 6, August 13th 2023
+
+Finally figured out why the Dale Chall scores were giving 0. The ints
+needed to be converted to doubles before being divided. Duh. Changed
+the design doc to reflect the decision to use Dale Chall only.
