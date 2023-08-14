@@ -11,7 +11,6 @@
 #ifndef TEST_UTILS_H
 #define TEST_UTILS_H
 
-
 // ANSI escape code to reset colors and formatting
 #define ANSI_COLOR_RESET     "\x1b[0m"
 
@@ -35,4 +34,11 @@
 #define ANSI_BG_COLOR_CYAN   "\x1b[46m"
 #define ANSI_BG_COLOR_WHITE  "\x1b[47m"
 
-#endif
+// improves readability?
+typedef long nanosecond;
+
+// TODO: Reduce duplication of PASS/FAIL prints, put that in this function
+// by turning all the test functions above ^ to return int success or fail.
+void announce_test(int count, char * name, int test(void));
+
+#endif // TEST_UTILS_H
