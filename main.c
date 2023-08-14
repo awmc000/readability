@@ -31,31 +31,14 @@ void handle_load(int load_success, const char *desc)
 
 void assess_readability(FILE *text_file)
 {
-	struct hash_table *easy_words   = hashtable_create(3000);
-	
-	struct hash_table *prepositions = hashtable_create(300);
-
-	int load_success;
+	struct hash_table *easy_words   = hashtable_create(6000);
 
 	// Load file of Lorge easy words list into hash table.
-	FILE * fp_easy_words = fopen("dale list of 769 easy words", "r");
-	load_success = hashtable_load_words_from_file(easy_words, fp_easy_words, 1500);
-	handle_load(load_success, "dale list of 769 easy words");
+	FILE * fp_easy_words = fopen("dale3000", "r");
+	int load_success = hashtable_load_words_from_file(easy_words, fp_easy_words, 1500);
+	handle_load(load_success, "dale3000");
 
-	hashtable_print_contents(easy_words, stdout);
-
-	// Load file of prepositions into hash table.
-	FILE * fp_prepositions = fopen("prepositions", "r");
-	load_success = hashtable_load_words_from_file(prepositions, fp_prepositions, 300);
-
-	handle_load(load_success, "List of prepositions");
-
-	hashtable_print_contents(prepositions, stdout);
-
-	// Track the number of sentences by counting their ending punctuation.
-	// Compute the average length of a sentence in words.
-	// Track the number of words which are not on the easy word list.
-	// Track the number of prepositions.
+	//hashtable_print_contents(easy_words, stdout);
 
 	// Set up the buffer for text reading.
 	char * buf_line = calloc(256, sizeof(char));
@@ -69,7 +52,6 @@ void assess_readability(FILE *text_file)
 	int words = 0;
 
 	int easy_words_count = 0;
-	int prepositions_count = 0;
 
 	// Count sentences and words.
 	while ( getline(&buf_line, &buf_size, text_file) != -1 )
@@ -101,23 +83,23 @@ void assess_readability(FILE *text_file)
 			// Check if this word is an easy word
 			if (hashtable_contains(easy_words, word_arr[i]))
 			{
-				printf("%s is an easy word.\n", word_arr[i]);
 				easy_words_count++;
-			}
-
-			// Check if this word is a preposition
-			if (hashtable_contains(prepositions, word_arr[i]))
-			{
-				printf("%s is a preposition.\n", word_arr[i]);
-				prepositions_count++;
 			}
 		}
 	}
 
-	
-	printf("%d easy words of %d words and %d prepositions in %d sentences.\n", 
-		easy_words_count, total_words, prepositions_count, total_sentences);
-	printf("%f average words per sentence.\n", (float) total_words / total_sentences);
+	int difficult_words = total_words - easy_words_count;
+
+	double difficult_percentage = (double)difficult_words / (double)total_words * 100.0;
+	double words_per_sentence = total_words / total_sentences;
+
+	double dale_chall_score = 0.1579 * difficult_percentage + 
+	(0.0496 * words_per_sentence); 
+
+	if (difficult_percentage > 5.0)
+		dale_chall_score += 3.6365;
+
+	printf("Dale-Chall score of %f\n", dale_chall_score);
 }
 
 int main(int argc, char *argv[])
