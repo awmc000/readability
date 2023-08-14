@@ -149,7 +149,7 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	// set up word regex pattern
 	regex_t word_re;
 
-	int word_comp = regcomp(&word_re, "[0-9A-Za-z]+", REG_EXTENDED);
+	int word_comp = regcomp(&word_re, "[0-9A-Za-z']+", REG_EXTENDED);
 	
 	assert(word_comp == 0);
 
