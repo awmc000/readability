@@ -34,35 +34,25 @@ void assess_readability(FILE *text_file)
 	struct hash_table *easy_words   = hashtable_create(6000);
 
 	// Load file of Lorge easy words list into hash table.
-	FILE * fp_easy_words = fopen("dale3000", "r");
+	FILE * fp_easy_words = fopen("lists/dale3000", "r");
 	int load_success = hashtable_load_words_from_file(easy_words, fp_easy_words, 1500);
 	handle_load(load_success, "dale3000");
-
-	//hashtable_print_contents(easy_words, stdout);
 
 	// Set up the buffer for text reading.
 	char * buf_line = calloc(256, sizeof(char));
 	size_t buf_size;
 
-	
-	int total_sentences = 0;
-	int total_words = 0;
-
-	int sentences = 0;
-	int words = 0;
+	int total_sentences = 0, sentences = 0;
+	int total_words = 0, words = 0;
 
 	int easy_words_count = 0;
 
 	// Count sentences and words.
 	while ( getline(&buf_line, &buf_size, text_file) != -1 )
 	{
-		// print the line
-		puts(buf_line);
-
 		// count sentences and words in the line
 		sentences = count_sentences(buf_line);
 		words = count_words(buf_line);
-		printf("%d words and %d sentences.\n", words, sentences);
 		
 		// add to text totals
 		total_sentences += sentences;
@@ -76,11 +66,9 @@ void assess_readability(FILE *text_file)
 		int array_creation_success = words_array_from_string(buf_line, 
 			num_words, word_arr);
 
+		// Check if each word is an easy word
 		for (unsigned int i = 0; i < words; i++)
 		{
-			printf("[%d]: \"%s\"\n", i, word_arr[i]);
-
-			// Check if this word is an easy word
 			if (hashtable_contains(easy_words, word_arr[i]))
 			{
 				easy_words_count++;
@@ -90,7 +78,7 @@ void assess_readability(FILE *text_file)
 
 	int difficult_words = total_words - easy_words_count;
 
-	double difficult_percentage = (double)difficult_words / (double)total_words * 100.0;
+	double difficult_percentage = (double) difficult_words / (double) total_words * 100.0;
 	double words_per_sentence = total_words / total_sentences;
 
 	double dale_chall_score = 0.1579 * difficult_percentage + 
