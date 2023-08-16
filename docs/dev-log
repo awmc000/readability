@@ -62,3 +62,6 @@ what wordcounter uses anyways!
 Finally figured out why the Dale Chall scores were giving 0. The ints
 needed to be converted to doubles before being divided. Duh. Changed
 the design doc to reflect the decision to use Dale Chall only.
+
+Reorganized file dir. Need to learn to use Pikchr to make diagrams.
+That could be really handy.
