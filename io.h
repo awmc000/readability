@@ -11,16 +11,10 @@
 int count_words(char * s);
 
 /*
- * Counts sentences in `s` by counting contiguous blocks of one or more 
+ * Counts sentences in `s` by counting contiguous sequences of one or more 
  * punctuation mark: '.', '?', '!', or ';'.
  */
 int count_sentences(char * s);
-
-/*
- * Given a file pointer `fp` and the number of words in the file `num_words`, 
- * stores words in the string array at `s_array`.
- */
-int words_array(FILE * fp, size_t num_words, char ** s_array);
 
 /*
  * Given a string `s`, the number of words in it `num_words`, and a string 
