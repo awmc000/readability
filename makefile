@@ -1,28 +1,36 @@
-main : main.o hash_table.o test_utils.o io.o
-	gcc -o readability main.o hash_table.o io.o -g
+INCLUDES=-Iinclude/
+
+main : main.o hash_table.o test_utils.o io.o scoring.o
+	gcc -o readability main.o hash_table.o io.o scoring.o -g
 	./readability testdata/test-text
 
-debug: main.c hash_table.c hash_table.h test_utils.h test_utils.c io.h io.c
-	gcc -o debug -g main.c hash_table.c test_utils.c io.c
+debug: src/main.c src/hash_table.c include/hash_table.h include/test_utils.h \
+test_utils.c include/io.h src/io.c
+	gcc -o debug -g src/main.c src/hash_table.c src/test_utils.c src/io.c
+	gdb debug
 
-main.o: main.c
-	gcc -c main.c -g
+main.o: src/main.c
+	gcc ${INCLUDES} -c src/main.c -g
 
-hash_table.o: hash_table.c hash_table.h
-	gcc -c hash_table.c -g
+hash_table.o: src/hash_table.c include/hash_table.h
+	gcc ${INCLUDES} -c src/hash_table.c -g
 
-test_utils.o: test_utils.c test_utils.h
-	gcc -c test_utils.c
+test_utils.o: src/test_utils.c include/test_utils.h
+	gcc ${INCLUDES} -c src/test_utils.c
 
-io.o: io.h io.c
-	gcc -c io.c
+io.o: include/io.h src/io.c
+	gcc ${INCLUDES} -c src/io.c
 
-test_ht: hash_table_test.c hash_table.c hash_table.h test_utils.h test_utils.c
-	gcc -o test_ht hash_table_test.c hash_table.c test_utils.c -g
+scoring.o: include/scoring.h src/scoring.c
+	gcc ${INCLUDES} -c src/scoring.c
+
+test_ht: src/hash_table_test.c src/hash_table.c src/hash_table.h src/test_utils.h \
+src/test_utils.c
+	gcc ${INCLUDES} -o test_ht src/hash_table_test.c src/hash_table.c src/test_utils.c -g
 	./test_ht
 
-test_io: io.c io.h io_test.c test_utils.c test_utils.h
-	gcc -g -o test_io io.c io_test.c test_utils.c
+test_io: src/io.c include/io.h src/io_test.c src/test_utils.c include/test_utils.h
+	gcc ${INCLUDES} -g -o test_io src/io.c src/io_test.c src/test_utils.c
 	./test_io
 
 clean:
