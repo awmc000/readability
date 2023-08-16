@@ -143,7 +143,7 @@ int words_array_from_string(char * s, size_t num_words, char ** s_array)
 	
 	assert(word_comp == 0);
 		
-	// get words from line
+	// get words from line one at a time
 	regmatch_t matches[1];
 	int offset = 0;
 
@@ -166,7 +166,6 @@ int words_array_from_string(char * s, size_t num_words, char ** s_array)
 		this_word[this_word_len] = '\0';
 			
 		// put in word array
-		printf("%s\n", this_word);
 		s_array[words_counted] = this_word;
 		words_counted++;
 		s += matches[0].rm_eo + 1;
