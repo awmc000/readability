@@ -29,13 +29,58 @@ void handle_load(int load_success, const char *desc)
 	}
 }
 
+void print_score_bracket(double dale_chall_score)
+{
+	printf("Easily understood by an average student in ");
+	
+	if (dale_chall_score <= 4.9)
+	{
+		printf("4th grade or lower\n");
+		return;
+	}
+
+	if (dale_chall_score <= 5.9)
+	{
+		printf("5th or 6th grade\n");
+		return;
+	}
+
+	if (dale_chall_score <= 6.9)
+	{
+		printf("7th or 8th grade\n");
+		return;
+	}
+
+	if (dale_chall_score <= 7.9)
+	{
+		printf("9th or 10th grade\n");
+		return;
+	}
+
+	if (dale_chall_score <= 8.9)
+	{
+		printf("11th or 12th grade\n");
+		return;
+	}
+
+	if (dale_chall_score <= 9.9)
+	{
+		printf("college\n");
+		return;
+	}
+
+	printf("college graduate\n");
+}
+
 void assess_readability(FILE *text_file)
 {
 	struct hash_table *easy_words   = hashtable_create(6000);
 
 	// Load file of Lorge easy words list into hash table.
 	FILE * fp_easy_words = fopen("lists/dale3000", "r");
-	int load_success = hashtable_load_words_from_file(easy_words, fp_easy_words, 1500);
+	int load_success = hashtable_load_words_from_file(easy_words, 
+		fp_easy_words, 1500);
+	
 	handle_load(load_success, "dale3000");
 
 	// Set up the buffer for text reading.
@@ -78,16 +123,16 @@ void assess_readability(FILE *text_file)
 
 	int difficult_words = total_words - easy_words_count;
 
-	double difficult_percentage = (double) difficult_words / (double) total_words * 100.0;
-	double words_per_sentence = total_words / total_sentences;
+	double diff_pct = (double) difficult_words / (double) total_words * 100.0;
+	double words_per_sent = total_words / total_sentences;
 
-	double dale_chall_score = 0.1579 * difficult_percentage + 
-	(0.0496 * words_per_sentence); 
+	double score = 0.1579 * diff_pct +  (0.0496 * words_per_sent); 
 
-	if (difficult_percentage > 5.0)
-		dale_chall_score += 3.6365;
+	if (diff_pct > 5.0)
+		score += 3.6365;
 
-	printf("Dale-Chall score of %f\n", dale_chall_score);
+	printf("Dale-Chall score of %f\n", score);
+	print_score_bracket(score);
 }
 
 int main(int argc, char *argv[])
