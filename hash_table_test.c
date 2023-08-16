@@ -29,8 +29,6 @@ int main(void)
 {
 	int test_num = 0;
 	
-
-
 	announce_test(test_num, "Creating a HT", &can_create); 
 	test_num++;
 
