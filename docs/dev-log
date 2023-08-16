@@ -65,3 +65,18 @@ the design doc to reflect the decision to use Dale Chall only.
 
 Reorganized file dir. Need to learn to use Pikchr to make diagrams.
 That could be really handy.
+
+# Day 7, August 15th 2023 (retroactive)
+
+On this day, I added the text grade description for the Dale Chall
+score computed, and started trying to hunt down the print statement
+that was printing every word in each text evaluated.
+
+# Day 8, August 16th 2023
+
+I am going to split all the Dale Chall stuff into its own module,
+which I think I will call `scoring`. I also want to move the headers
+and source files into their own folders and make sure the makefile
+can handle that. Got that done with some trouble. I accidentally
+`mv`ed one header into anothers name, losing the content of the 
+header. Just pasted it back from git to fix that.
