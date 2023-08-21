@@ -80,3 +80,31 @@ and source files into their own folders and make sure the makefile
 can handle that. Got that done with some trouble. I accidentally
 `mv`ed one header into anothers name, losing the content of the 
 header. Just pasted it back from git to fix that.
+
+# Day 9, August 18th 2023
+
+Added a function macro to test_utils module that will save some LOCs.
+
+# Day 10, August 20th 2023 (retroactive)
+
+On this day, I was working on the scoring problems. Right now, a huge
+quantity of easy words are perceived as hard words, because they are
+other forms of the word. "work" is on the list, "working", "works",
+"worked" are not. 
+
+I implemented the `drop_end_if_s()` function, but I don't think it is
+going to be a permanent solution. English orthography just does not
+follow hard and fast rules so that any word ending in "ed" can have
+those letters stripped to get the root word.
+
+# Day 11, August 21st 2023
+
+https://github.com/gutfeeling/word_forms
+
+I think this Python module will help me solve the problem easily. It
+has a function to return all the forms of a given word, so I could
+write a new, expanded list of all the forms of the words on the 
+original list. It will be much larger, I don't know how much, maybe
+roughly five times as many words (15,000 words) as a wild guess. This
+would still use a tolerable amount of memory, although it definitely
+makes the database usage more appealing.  
