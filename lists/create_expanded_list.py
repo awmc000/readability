@@ -9,45 +9,54 @@
 # of the words in the previous list.
 # ###################################################################
 import os
+import sys
 from word_forms.word_forms import get_word_forms
 
-# Open original list and new list files.
-original_list = open('dale3000', 'r')
-new_list = open('dale-expanded', 'w')
+def main() -> int:
+	# Open original list and new list files.
+	original_file = open('dale3000', 'r')
+	new_file = open('dale-expanded', 'w')
 
+	line = original_file.readline()
 
-# For each line in the old file,
-# 	For each word in the line,
-# 		Get a list of forms of that word.
-# 		Add all forms to the new file.
-line = original_list.readline()
+	# For each line in the old file
+	while line != '':
+		# Get rid of newline
+		word = line.strip()
 
-while line != '':
-	word = line.strip()
-	print('For ' + word, sep = '')
+		# Get dictionary of word forms, sorted by word type
+		forms_dict = get_word_forms(word)
 
-	# Get dictionary of word forms, sorted by word type
-	forms_dict = get_word_forms(word)
-	del forms_dict['n']
-	form_list = []
-	for i in list(forms_dict.values()):
-		for j in i:
-			form_list.append(j)
+		# Delete the noun forms: contains a lot of unusual, rarely used
+		# words. This is sure to cost us some legitimate words as well...
+		# These words are not easy, for example: "machinist" or "wisenesses"
+		del forms_dict['n']
 
-	# filter out word forms longer than 10 letters
-	form_list = list(filter(
-		lambda word: (len(word) < 11), form_list))
+		# Put all other type of word forms into a list.
+		form_list = []
 
-	form_set = set(form_list)
+		for i in list(forms_dict.values()):
+			for j in i:
+				form_list.append(j)
 
-	for form in form_set:
-		new_list.write(form + '\n')
-		print(form, sep = ' ')
-	print('')
+		# Filter out word forms longer than 10 letters
+		form_list = list(filter(
+			lambda word: (len(word) < 11), form_list))
 
-	# Go to the next line.
-	line = original_list.readline()
+		# Convert to a set to get rid of duplicates.
+		form_set = set(form_list)
 
-# Close original list and new list files.
-original_list.close()
-new_list.close()
+		# Write to expanded list file followed by newline.
+		for form in form_set:
+			new_file.write(form + '\n')
+
+		# Go to the next line.
+		line = original_file.readline()
+
+	# Close original list and new list files.
+	original_file.close()
+	new_file.close()
+	return 0
+
+if __name__ == '__main__':
+	sys.exit(main())
