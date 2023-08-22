@@ -2,7 +2,7 @@ INCLUDES=-Iinclude/
 
 main : main.o hash_table.o test_utils.o io.o scoring.o
 	gcc -o readability main.o hash_table.o io.o scoring.o -g
-	./readability testdata/test-text
+	./readability testdata/gettysburg
 
 debug: src/main.c src/hash_table.c include/hash_table.h include/test_utils.h \
 test_utils.c include/io.h src/io.c
