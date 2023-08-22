@@ -17,62 +17,6 @@ void handle_load(int load_success, const char *desc)
 	}
 }
 
-// TODO: Implement function 
-// - Returns entire string if it does not end with an "s"
-// - Returns a string containing all but last char if it does end with
-// "S"
-char * drop_end_if_s(char * s)
-{
-	unsigned int length = strlen(s);
-
-	if (length <= 3)
-		return s;
-
-	char * root;
-
-	if (s[length - 1] == 's')
-	{
-		// Word is one char shorter, but leave space for '\0'
-		root = calloc(length + 1, sizeof(char));
-
-		for (unsigned int i = 0; i < length - 1; i++)
-		{
-			root[i] = s[i]; 
-		}
-		root[length - 1]  = '\0';
-		return root;
-	}
-
-	/*
-	if ( (s[length - 1] == 'd') && (s[length - 2] == 'e') )
-	{
-		root = calloc(length - 2 + 1, sizeof(char));
-		for (unsigned int i = 0; i < length - 2; i++)
-		{
-			root[i] = s[i];
-		}
-		root[length - 2] = '\0';
-		return root;
-	}
-	*/
-
-
-	if ( (s[length - 1] == 'd') && (s[length - 2] == 'e'))
-	{
-		// Word is one char shorter, but leave space for '\0'
-		root = calloc(length + 1, sizeof(char));
-
-		for (unsigned int i = 0; i < length - 1; i++)
-		{
-			root[i] = s[i]; 
-		}
-		root[length - 1]  = '\0';
-		return root;
-	}
-
-	return s;
-}
-
 void print_score_bracket(double dale_chall_score)
 {
 	printf("Easily understood by an average student in ");
@@ -106,16 +50,70 @@ void print_score_bracket(double dale_chall_score)
 		printf("college graduate\n");
 }
 
-double assess_readability(FILE *text_file)
+struct hash_table * get_dale_list_table()
 {
 	struct hash_table *easy_words   = hashtable_create(6000);
 
 	// Load file of Lorge easy words list into hash table.
 	FILE * fp_easy_words = fopen("lists/dale3000", "r");
 	int load_success = hashtable_load_words_from_file(easy_words, 
-		fp_easy_words, 1500);
+		fp_easy_words, 2950);
 	
 	handle_load(load_success, "dale3000");
+
+	return easy_words;
+}
+
+struct hash_table * get_exp_dale_list_table()
+{
+	struct hash_table *easy_words   = hashtable_create(28000);
+
+	// Load file of Lorge easy words list into hash table.
+	FILE * fp_easy_words = fopen("lists/dale-expanded", "r");
+	int load_success = hashtable_load_words_from_file(easy_words, 
+		fp_easy_words, 14921);
+	
+	handle_load(load_success, "dale-expanded");
+
+	return easy_words;
+}
+
+struct hash_table * get_proper_nouns_table()
+{
+	struct hash_table *easy_words   = hashtable_create(10000);
+
+	// Load file of Lorge easy words list into hash table.
+	FILE * fp_easy_words = fopen("lists/proper-nouns", "r");
+	int load_success = hashtable_load_words_from_file(easy_words, 
+		fp_easy_words, 5742);
+	
+	handle_load(load_success, "proper-nouns");
+
+	return easy_words;
+}
+
+int all_digits(char * s)
+{
+	unsigned int s_len = strlen(s);
+
+	for (unsigned int i = 0; i < s_len; i++)
+	{
+		if (!isdigit(s[i]))
+		{
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+double assess_readability(FILE *text_file)
+{
+	#ifdef USE_EXPANDED_DALE_LIST
+		struct hash_table *easy_words   = get_exp_dale_list_table();
+	#else
+		struct hash_table *easy_words   = get_dale_list_table();		
+	#endif
 
 	// Set up the buffer for text reading.
 	char * buf_line = calloc(256, sizeof(char));
@@ -125,6 +123,9 @@ double assess_readability(FILE *text_file)
 	int total_words = 0, words = 0;
 
 	int easy_words_count = 0;
+
+	struct hash_table *proper_nouns = get_proper_nouns_table();
+	hashtable_print_contents(proper_nouns, stdout);
 
 	// Count sentences and words.
 	while ( getline(&buf_line, &buf_size, text_file) != -1 )
@@ -148,14 +149,26 @@ double assess_readability(FILE *text_file)
 		// Check if each word is an easy word
 		for (unsigned int i = 0; i < words; i++)
 		{
-			if (hashtable_contains(easy_words, drop_end_if_s(word_arr[i])))
+			if (all_digits(word_arr[i]))
 			{
 				easy_words_count++;
+				printf("Digit: %s\n", word_arr[i]);
+			}
+			if (hashtable_contains(easy_words, word_arr[i]))
+			{
+				easy_words_count++;
+				printf("Easy word: %s\n", word_arr[i]);
+			}
+			else if (hashtable_contains(proper_nouns, word_arr[i]))
+			{
+				easy_words_count++;
+				printf("Proper noun: %s\n", word_arr[i]);
 			}
 			#ifdef PRINT_HARD_WORDS
 				else if (PRINT_HARD_WORDS)
 				{
-						printf("%s is a hard word.\n", drop_end_if_s(word_arr[i]));
+						printf("%s is a hard word.\n", word_arr[i]);
+
 				}
 			#endif
 		}
@@ -170,10 +183,14 @@ double assess_readability(FILE *text_file)
 
 	if (diff_pct > 5.0)
 		score += 3.6365;
+
 	printf("Dale-Chall score of %f\n", score);
+
 	printf("Breakdown: %d hard of %d words, %d sentences, avg. " \
-		"%f words per sentence. %f%% difficult words.\n", difficult_words, total_words, 
-		total_sentences, words_per_sent, diff_pct);
+		"%f words per sentence. %f%% difficult words.\n", difficult_words, 
+		total_words, total_sentences, words_per_sent, diff_pct);
+
 	print_score_bracket(score);
+
 	return score;
 }
