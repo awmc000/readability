@@ -30,7 +30,7 @@ def main() -> int:
 		# Delete the noun forms: contains a lot of unusual, rarely used
 		# words. This is sure to cost us some legitimate words as well...
 		# These words are not easy, for example: "machinist" or "wisenesses"
-		del forms_dict['n']
+		# del forms_dict['n']
 
 		# Put all other type of word forms into a list.
 		form_list = []
@@ -45,6 +45,9 @@ def main() -> int:
 
 		# Convert to a set to get rid of duplicates.
 		form_set = set(form_list)
+
+		# Add the original word to the set.
+		form_set.add(word)
 
 		# Write to expanded list file followed by newline.
 		for form in form_set:
