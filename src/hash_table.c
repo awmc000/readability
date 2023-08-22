@@ -183,6 +183,11 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	return 1;
 }
 
+int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_lines)
+{
+	// TODO: implement
+}
+
 void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 {
 	unsigned int i = 0;
