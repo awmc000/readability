@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 #define INITIAL_SIZE 800
-#define MAX_PROBES 20
+#define MAX_PROBES 100
 
 struct hash_table {
 	unsigned int array_size;
@@ -58,6 +58,13 @@ struct hash_table *hashtable_resize(struct hash_table *ht, size_t size);
  * Eg. "Hello", "1945", "3rd", "tip-top".  
  **/
 int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_words);
+
+/**
+ * Loads all lines from the file stream `fp` up to EOF into `ht`.
+ * Newlines are not added.
+ **/
+int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_lines);
+
 
 /**
  * Prints the contents of the hash table to the given file pointer.
