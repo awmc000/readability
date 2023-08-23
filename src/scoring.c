@@ -1,19 +1,22 @@
 #include "scoring.h"
+#include <time.h>
+typedef long nanosecond;
 
-#define PRINT_HARD_WORDS 1
+//#define PRINT_HARD_WORDS 1
 
 void handle_load(int load_success, const char *desc)
 {
 	switch (load_success)
 	{
 	case 1:
-		printf("%s loaded successfully.\n", desc);
+		fprintf(stderr, "%s loaded successfully.\n", desc);
 		break;
 	case 0:
-		printf("%s failed to load.\n", desc);
+		fprintf(stderr, "%s failed to load.\n", desc);
 		break;
 	default:
-		printf("unknown load success code received!\n");
+		fprintf(stderr, "unknown load success code received!\n");
+		break;
 	}
 }
 
@@ -50,20 +53,6 @@ void print_score_bracket(double dale_chall_score)
 		printf("college graduate\n");
 }
 
-struct hash_table * get_dale_list_table()
-{
-	struct hash_table *easy_words   = hashtable_create(6000);
-
-	// Load file of Lorge easy words list into hash table.
-	FILE * fp_easy_words = fopen("lists/dale3000", "r");
-	int load_success = hashtable_load_words_from_file(easy_words, 
-		fp_easy_words, 2950);
-	
-	handle_load(load_success, "dale3000");
-
-	return easy_words;
-}
-
 struct hash_table *get_table_from_list_file(const char * filename, unsigned int words)
 {
 	struct hash_table *list_table   = hashtable_create(2 * words);
@@ -81,9 +70,7 @@ struct hash_table *get_table_from_list_file(const char * filename, unsigned int 
 
 int all_digits(char * s)
 {
-	unsigned int s_len = strlen(s);
-
-	for (unsigned int i = 0; i < s_len; i++)
+	for (unsigned int i = 0; i < strlen(s); i++)
 	{
 		if (!isdigit(s[i]))
 		{
@@ -96,6 +83,11 @@ int all_digits(char * s)
 
 double assess_readability(FILE *text_file)
 {
+	struct timespec res;
+	nanosecond before, after;
+	clock_gettime(CLOCK_REALTIME, &res);
+	before = res.tv_nsec;
+	
 	// Set up the buffer for line-by-line text reading.
 	char * buf_line = calloc(256, sizeof(char));
 	size_t buf_size;
@@ -161,23 +153,42 @@ double assess_readability(FILE *text_file)
 		}
 	}
 
+	if (total_sentences == 0 || total_words < 5)
+	{
+		printf("Invalid input. Enter at least one sentence"
+			" with 5 words to receive a readability score.\n");
+		return -1.0;
+	}
+
 	int difficult_words = total_words - easy_words_count;
 
-	double diff_pct = (double) difficult_words / (double) total_words * 100.0;
-	double words_per_sent = (double) total_words / (double) total_sentences;
+	double diff_pct = (double) difficult_words / 
+		(double) total_words * 100.0;
+	
+	double words_per_sent = (double) total_words / 
+		(double) total_sentences;
 
-	double score = 0.1579 * diff_pct +  (0.0496 * words_per_sent); 
+	double score = 0.1579 * diff_pct +  (0.0496 * words_per_sent);
 
 	if (diff_pct > 5.0)
 		score += 3.6365;
 
-	printf("Dale-Chall score of %f\n", score);
+	printf("Dale-Chall score of %.2f\n", score);
 
-	printf("Breakdown: %d hard of %d words, %d sentences, avg. " \
-		"%f words per sentence. %f%% difficult words.\n", difficult_words, 
-		total_words, total_sentences, words_per_sent, diff_pct);
+	printf("Breakdown: %d hard of %d words, %d sentences.\n avg. "
+		"%2.f words per sentence. %.2f%% difficult words.\n", 
+		difficult_words, total_words, total_sentences, 
+		words_per_sent, diff_pct);
 
 	print_score_bracket(score);
+
+	// Get the completion time
+	clock_gettime(CLOCK_REALTIME, &res);
+	after = res.tv_nsec;
+	// Take the difference and divide by one million for milliseconds
+	nanosecond diff = after - before;
+
+	printf("Computed score in %.4Lf ms.\n", (long double)diff / 1000000L);
 
 	return score;
 }
