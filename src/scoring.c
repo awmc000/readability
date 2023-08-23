@@ -64,32 +64,19 @@ struct hash_table * get_dale_list_table()
 	return easy_words;
 }
 
-struct hash_table * get_exp_dale_list_table()
+struct hash_table *get_table_from_list_file(const char * filename, unsigned int words)
 {
-	struct hash_table *easy_words   = hashtable_create(28000);
+	struct hash_table *list_table   = hashtable_create(2 * words);
 
 	// Load file of Lorge easy words list into hash table.
-	FILE * fp_easy_words = fopen("lists/dale-expanded", "r");
-	int load_success = hashtable_load_words_from_file(easy_words, 
-		fp_easy_words, 14921);
+	FILE * list_fp = fopen(filename, "r");
+	int load_success = hashtable_load_words_from_file(list_table, 
+		list_fp, words);
 	
-	handle_load(load_success, "dale-expanded");
+	handle_load(load_success, filename);
 
-	return easy_words;
-}
+	return list_table;
 
-struct hash_table * get_proper_nouns_table()
-{
-	struct hash_table *easy_words   = hashtable_create(10000);
-
-	// Load file of Lorge easy words list into hash table.
-	FILE * fp_easy_words = fopen("lists/proper-nouns", "r");
-	int load_success = hashtable_load_words_from_file(easy_words, 
-		fp_easy_words, 5742);
-	
-	handle_load(load_success, "proper-nouns");
-
-	return easy_words;
 }
 
 int all_digits(char * s)
@@ -109,23 +96,23 @@ int all_digits(char * s)
 
 double assess_readability(FILE *text_file)
 {
-	#ifdef USE_EXPANDED_DALE_LIST
-		struct hash_table *easy_words   = get_exp_dale_list_table();
-	#else
-		struct hash_table *easy_words   = get_dale_list_table();		
-	#endif
-
-	// Set up the buffer for text reading.
+	// Set up the buffer for line-by-line text reading.
 	char * buf_line = calloc(256, sizeof(char));
 	size_t buf_size;
 
+	// Counter variables for computing the score.
 	int total_sentences = 0, sentences = 0;
 	int total_words = 0, words = 0;
 
 	int easy_words_count = 0;
 
-	struct hash_table *proper_nouns = get_proper_nouns_table();
-	hashtable_print_contents(proper_nouns, stdout);
+	// Set up hash tables for Dale list of easy words 
+	// and list of proper nouns 
+	struct hash_table *easy_words = get_table_from_list_file(
+		"lists/dale-expanded", 14921);
+
+	struct hash_table *proper_nouns = get_table_from_list_file(
+		"lists/proper-nouns", 5742);
 
 	// Count sentences and words.
 	while ( getline(&buf_line, &buf_size, text_file) != -1 )
@@ -143,8 +130,8 @@ double assess_readability(FILE *text_file)
 		char ** word_arr = calloc(2 * words, sizeof(char *));
 		size_t *word_arr_elems;
 
-		int array_creation_success = words_array_from_string(buf_line, 
-			num_words, word_arr);
+		int array_creation_success = words_array_from_string(
+			buf_line, num_words, word_arr);
 
 		// Check if each word is an easy word
 		for (unsigned int i = 0; i < words; i++)
@@ -152,17 +139,17 @@ double assess_readability(FILE *text_file)
 			if (all_digits(word_arr[i]))
 			{
 				easy_words_count++;
-				printf("Digit: %s\n", word_arr[i]);
+				//printf("Digit: %s\n", word_arr[i]);
 			}
 			if (hashtable_contains(easy_words, word_arr[i]))
 			{
 				easy_words_count++;
-				printf("Easy word: %s\n", word_arr[i]);
+				//printf("Easy word: %s\n", word_arr[i]);
 			}
 			else if (hashtable_contains(proper_nouns, word_arr[i]))
 			{
 				easy_words_count++;
-				printf("Proper noun: %s\n", word_arr[i]);
+				//printf("Proper noun: %s\n", word_arr[i]);
 			}
 			#ifdef PRINT_HARD_WORDS
 				else if (PRINT_HARD_WORDS)
