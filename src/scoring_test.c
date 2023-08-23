@@ -18,62 +18,56 @@ int assess_electoralcollege3();
 int assess_modelt4();
 int assess_raisedbydogs4();
 int assess_alchemy5();
-int assess_nomads6();
 
 // Main method runs test cases printing results with announce_test
 int main(void)
 {
 	int test_num = 0;
 
-	RUN_TEST(assess_roysullivan3)
+	RUN_TEST(assess_roysullivan3);
 
-	RUN_TEST(assess_electoralcollege3)
+	RUN_TEST(assess_electoralcollege3);
+
+	RUN_TEST(assess_modelt4);
+
+	RUN_TEST(assess_raisedbydogs4);
+
+	RUN_TEST(assess_alchemy5);
 
 	return 0;
 }
 
+int test_file_score(const char * filename, double max_acceptable_score)
+{
+	FILE *fp = fopen(filename, "r");
+
+	double score = assess_readability(fp);
+	fclose(fp);
+	return (score <= max_acceptable_score);
+}
 
 // Test case function definitions
 int assess_roysullivan3()
 {
-	// double assess_readability(FILE *text_file);
-	FILE *fp = fopen("testdata/roysullivan3", "r");
-
-	double score = assess_readability(fp);
-	fclose(fp);
-	return (score <= 4.9);
+	return test_file_score("testdata/roysullivan3", 5.9);
 }
 
 int assess_electoralcollege3()
 {
-	// double assess_readability(FILE *text_file);
-	FILE *fp = fopen("testdata/electoralcollege3", "r");
-
-	double score = assess_readability(fp);
-	fclose(fp);
-	return (score <= 4.9);
+	return test_file_score("testdata/electoralcollege3", 7.9);
 }
 
 int assess_modelt4()
 {
-	// TODO: IMPLEMENT
-	return 1;
+	return test_file_score("testdata/modelt4", 6.9);
 }
 
 int assess_raisedbydogs4()
 {
-	// TODO: IMPLEMENT
-	return 1;
+	return test_file_score("testdata/raisedbydogs4", 6.9);
 }
 
 int assess_alchemy5()
 {
-	// TODO: IMPLEMENT
-	return 1;
-}
-
-int assess_nomads6()
-{
-	// TODO: IMPLEMENT
-	return 1;
+	return test_file_score("testdata/alchemy5", 8.9);
 }
