@@ -11,6 +11,5 @@
 
 void print_score_bracket(double dale_chall_score);
 double assess_readability(FILE *text_file);
-// struct hash_table *get_table_from_list_file(const char * filename, unsigned int words);
 
 #endif // SCORING_H
