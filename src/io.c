@@ -1,4 +1,3 @@
-#include "io.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -7,6 +6,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "io.h"
 
 int count_words(char * s)
 {
@@ -106,6 +106,8 @@ int words_array_from_string(char * s, size_t num_words, char ** s_array)
 		words_counted++;
 		s += matches[0].rm_eo + 1;
 	}
+
+	regfree(&word_re);
 
 	return 1;
 }

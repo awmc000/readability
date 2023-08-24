@@ -133,11 +133,12 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 		printf("Cannot load a null file pointer!\n");
 	}
 
-	// set up buffer for file
+	// Set up buffer for file
 	char * buf_line = calloc(256, sizeof(char));
-	size_t buf_size;
+	size_t buf_size = 0;
 
-	char ** word_array = calloc(num_words * 2, sizeof(char *));
+	// Set up string array for words parsed from file
+	char ** word_array = calloc(num_words, sizeof(char *));
 
 	if (word_array == NULL)
 	{
@@ -169,6 +170,8 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 		{
 			this_word[i] = buf_line[i];
 		}
+
+		this_word[matches[0].rm_eo - matches[0].rm_so] = '\0';
 		
 		// put in word array
 		word_array[words] = this_word;
@@ -179,6 +182,15 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	{
 		hashtable_insert(ht, word_array[i]);
 	}
+
+	// Free the memory used by the regular expression
+	regfree(&word_re);
+
+	// Free the line buffer
+	free(buf_line);
+
+	// Free the array
+	free(word_array);
 
 	return 1;
 }
@@ -210,4 +222,15 @@ void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 	}
 	fputc('\n', fp);
 
+}
+
+void hashtable_delete(struct hash_table *ht)
+{
+	for (unsigned int i; i < ht->array_size; i++)
+	{
+		if (ht->strings[i] != NULL)
+		{
+			free(ht->strings[i]);
+		}
+	}
 }

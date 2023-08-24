@@ -71,4 +71,9 @@ int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_
  **/
 void hashtable_print_contents(struct hash_table *ht, FILE *fp);
 
+/**
+ * Frees the contents of a hash table.
+ **/
+void hashtable_delete(struct hash_table *ht);
+
 #endif // HASH_TABLE_H
