@@ -229,7 +229,7 @@ void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 void hashtable_delete(struct hash_table *ht)
 {
 	int freed = 0;
-	for (unsigned int i; i < ht->array_size; i++)
+	for (unsigned int i = 0; i < ht->array_size; i++)
 	{
 		if (ht->strings[i] != NULL)
 		{
@@ -238,6 +238,7 @@ void hashtable_delete(struct hash_table *ht)
 			freed++;
 		}
 	}
+	free(ht->strings);
 	printf("Freed %d strings from a ht with %d elems"
 		"and total size %d.\n", freed,
 		ht->array_elems, ht->array_size);

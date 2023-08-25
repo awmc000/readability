@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 		printf("%s\n", argv[1]);
 		FILE *f = fopen(argv[1], "r");
 		assess_readability(f);
+		fclose(f);
 		return 0;
 	}
 
