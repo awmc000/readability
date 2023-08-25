@@ -59,8 +59,10 @@ struct hash_table *get_table_from_list_file(const char * filename, unsigned int 
 
 	// Load file of Lorge easy words list into hash table.
 	FILE * list_fp = fopen(filename, "r");
+	
 	int load_success = hashtable_load_words_from_file(list_table, 
 		list_fp, words);
+	
 	handle_load(load_success, filename);
 
 	fclose(list_fp);
@@ -91,7 +93,7 @@ double assess_readability(FILE *text_file)
 	
 	// Set up the buffer for line-by-line text reading.
 	char * buf_line = calloc(256, sizeof(char));
-	size_t buf_size;
+	size_t buf_size = 0;
 
 	// Counter variables for computing the score.
 	int total_sentences = 0, sentences = 0;
@@ -152,7 +154,7 @@ double assess_readability(FILE *text_file)
 				}
 			#endif
 			
-			// Memory leak fix: free each word after use
+			// free each word after use
 			free(word_arr[i]);
 		}
 
@@ -166,10 +168,9 @@ double assess_readability(FILE *text_file)
 	hashtable_delete(easy_words);
 	hashtable_delete(proper_nouns);
 
-	free(easy_words->strings);
+
 	free(easy_words);
 
-	free(proper_nouns->strings);
 	free(proper_nouns);
 
 

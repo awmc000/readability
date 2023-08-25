@@ -61,7 +61,9 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 
 /**
  * Loads all lines from the file stream `fp` up to EOF into `ht`.
- * Newlines are not added.
+ * Newlines are not added. Should be faster than load_words_from_file
+ * for list files which have just a single word separated by 
+ * newlines.
  **/
 int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_lines);
 

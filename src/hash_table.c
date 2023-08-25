@@ -131,6 +131,7 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	if (fp == NULL)
 	{
 		printf("Cannot load a null file pointer!\n");
+		return 0;
 	}
 
 	// Set up buffer for file
@@ -143,6 +144,9 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	if (word_array == NULL)
 	{
 		printf("Failed to allocate word_array for %lu words!", num_words);
+		free(buf_line);
+		free(word_array);
+		return 0;
 	}
 
 	
@@ -228,18 +232,13 @@ void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 
 void hashtable_delete(struct hash_table *ht)
 {
-	int freed = 0;
 	for (unsigned int i = 0; i < ht->array_size; i++)
 	{
 		if (ht->strings[i] != NULL)
 		{
 			free(ht->strings[i]);
 			ht->array_elems--;
-			freed++;
 		}
 	}
 	free(ht->strings);
-	printf("Freed %d strings from a ht with %d elems"
-		"and total size %d.\n", freed,
-		ht->array_elems, ht->array_size);
 }
