@@ -151,8 +151,13 @@ double assess_readability(FILE *text_file)
 
 				}
 			#endif
+			
+			// Memory leak fix: free each word after use
+			free(word_arr[i]);
 		}
 
+		// When we were not freeing each word, this would leave
+		// as many dangling pointers as there were words in the text!
 		free(word_arr);
 	}
 
