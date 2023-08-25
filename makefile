@@ -4,9 +4,11 @@ main : main.o hash_table.o test_utils.o io.o scoring.o
 	gcc -Wall -o readability main.o hash_table.o io.o scoring.o -g
 	./readability testdata/gettysburg
 
-debug: src/main.c src/hash_table.c include/hash_table.h include/test_utils.h \
-test_utils.c include/io.h src/io.c
-	gcc -o debug -g src/main.c src/hash_table.c src/test_utils.c src/io.c
+debug: src/main.c src/hash_table.c include/hash_table.h \
+include/test_utils.h src/test_utils.c include/io.h src/io.c \
+include/scoring.h
+	gcc -o debug -g ${INCLUDES} src/main.c src/hash_table.c \
+	src/test_utils.c src/io.c src/scoring.c
 	gdb debug
 
 main.o: src/main.c

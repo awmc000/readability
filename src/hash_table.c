@@ -145,7 +145,7 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 		printf("Failed to allocate word_array for %lu words!", num_words);
 	}
 
-	int words = 0;
+	
 
 	// set up word regex pattern
 	regex_t word_re;
@@ -153,6 +153,8 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	int word_comp = regcomp(&word_re, "[0-9A-Za-z']+", REG_EXTENDED);
 	
 	assert(word_comp == 0);
+
+	int words = 0;
 
 	while ( getline(&buf_line, &buf_size, fp) != -1 )
 	{
@@ -168,7 +170,7 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 		
 		for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
 		{
-			this_word[i] = buf_line[i];
+			this_word[i - matches[0].rm_so] = buf_line[i];
 		}
 
 		this_word[matches[0].rm_eo - matches[0].rm_so] = '\0';
@@ -226,11 +228,17 @@ void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 
 void hashtable_delete(struct hash_table *ht)
 {
+	int freed = 0;
 	for (unsigned int i; i < ht->array_size; i++)
 	{
 		if (ht->strings[i] != NULL)
 		{
 			free(ht->strings[i]);
+			ht->array_elems--;
+			freed++;
 		}
 	}
+	printf("Freed %d strings from a ht with %d elems"
+		"and total size %d.\n", freed,
+		ht->array_elems, ht->array_size);
 }
