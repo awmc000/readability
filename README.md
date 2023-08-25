@@ -22,8 +22,6 @@ readability ~/Documents/story.txt
 testdata/gettysburg
 lists/dale-expanded loaded successfully.
 lists/proper-nouns loaded successfully.
-Freed 14921 strings from a ht with 0 elemsand total size 29842.
-Freed 0 strings from a ht with 5742 elemsand total size 11484.
 Dale-Chall score of 7.20
 Breakdown: 38 hard of 270 words, 10 sentences.
  avg. 27 words per sentence. 14.07% difficult words.

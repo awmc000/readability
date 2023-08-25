@@ -107,4 +107,10 @@ write a new, expanded list of all the forms of the words on the
 original list. It will be much larger, I don't know how much, maybe
 roughly five times as many words (15,000 words) as a wild guess. This
 would still use a tolerable amount of memory, although it definitely
-makes the database usage more appealing.  
+makes the database usage more appealing.
+
+# Days 12-13-14, August 23, 24, 25 2023
+
+Have been working on memory leaks. Fixed the smallest one: the leak
+of words in the word array. The worst leak is that for some reason
+no strings are deleted successfully from the proper nouns list. 
