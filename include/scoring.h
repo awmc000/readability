@@ -1,3 +1,12 @@
+/*
+ * August 16th, 2023
+ *
+ * scoring.h
+ *
+ * Alex McColm
+ *
+ * Functions for assessing Dale Chall readability score of a text.
+ **/
 #ifndef SCORING_H
 #define SCORING_H
 
