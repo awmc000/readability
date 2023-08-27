@@ -27,11 +27,6 @@ def main() -> int:
 		# Get dictionary of word forms, sorted by word type
 		forms_dict = get_word_forms(word)
 
-		# Delete the noun forms: contains a lot of unusual, rarely used
-		# words. This is sure to cost us some legitimate words as well...
-		# These words are not easy, for example: "machinist" or "wisenesses"
-		# del forms_dict['n']
-
 		# Put all other type of word forms into a list.
 		form_list = []
 
