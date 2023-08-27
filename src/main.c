@@ -12,11 +12,13 @@
 
 int main(int argc, char *argv[])
 {
+	// hide stderr
 	freopen("/dev/null", "w", stderr);
+	
 	// If filename given, use that
-	if (argc == 2)
+	if (argc >= 2)
 	{
-		printf("%s\n", argv[1]);
+		printf("READABILITY OF \"%s\"\n", argv[1]);
 		FILE *f = fopen(argv[1], "r");
 		assess_readability(f);
 		fclose(f);
