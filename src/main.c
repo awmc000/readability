@@ -12,6 +12,7 @@
 
 int main(int argc, char *argv[])
 {
+	freopen("/dev/null", "w", stderr);
 	// If filename given, use that
 	if (argc == 2)
 	{
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
 	// Else, take input line by line until sentinel value.
 	else if (argc == 1)
 	{
+		printf("Type-in mode: Enter text and hit CTRL-D to finish.\n");
 		assess_readability(stdin);
 		return 0;
 	}

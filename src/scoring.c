@@ -22,27 +22,27 @@ void handle_load(int load_success, const char *desc)
 
 void print_score_bracket(double dale_chall_score)
 {
-	printf("Easily understood by an average student in ");
+	printf("Easily understood by an average ");
 	
 	if (dale_chall_score <= 4.9)
 
-		printf("4th grade or lower\n");
+		printf("student in 4th grade or lower.\n");
 	
 	else if (dale_chall_score <= 5.9)
 	
-		printf("5th or 6th grade\n");
+		printf("student in 5th or 6th grade.\n");
 	
 	else if (dale_chall_score <= 6.9)
 	
-		printf("7th or 8th grade\n");
+		printf("student in 7th or 8th grade.\n");
 	
 	else if (dale_chall_score <= 7.9)
 	
-		printf("9th or 10th grade\n");
+		printf("student in 9th or 10th grade.\n");
 	
 	else if (dale_chall_score <= 8.9)
 	
-		printf("11th or 12th grade\n");
+		printf("student in 11th or 12th grade.\n");
 	
 	else if (dale_chall_score <= 9.9)
 	
@@ -50,7 +50,7 @@ void print_score_bracket(double dale_chall_score)
 	
 	else
 	
-		printf("college graduate\n");
+		printf("college graduate.\n");
 }
 
 struct hash_table *get_table_from_list_file(const char * filename, unsigned int words)
@@ -82,6 +82,24 @@ int all_digits(char * s)
 	}
 
 	return 1;
+}
+
+void print_report(int difficult_words, int total_words, 
+	int total_sentences, float words_per_sent, float diff_pct,
+	float score)
+{
+	printf("==== Breakdown ====\n"
+	"HARD WORDS : %d\n"
+	"TOTAL WORDS: %d\n"
+	"SENTENCES  : %d\n"
+	"AVG. WORDS / SENTENCE : %.2f\n"
+	"PCT. DIFFICULT WORDS  : %.2f\n"
+	"DALE-CHALL READABILITY: %.3f\n",
+	difficult_words, total_words, total_sentences,
+	words_per_sent, diff_pct, score);
+
+
+	print_score_bracket(score);
 }
 
 double assess_readability(FILE *text_file)
@@ -134,17 +152,14 @@ double assess_readability(FILE *text_file)
 			if (all_digits(word_arr[i]))
 			{
 				easy_words_count++;
-				//printf("Digit: %s\n", word_arr[i]);
 			}
 			if (hashtable_contains(easy_words, word_arr[i]))
 			{
 				easy_words_count++;
-				//printf("Easy word: %s\n", word_arr[i]);
 			}
 			else if (hashtable_contains(proper_nouns, word_arr[i]))
 			{
 				easy_words_count++;
-				//printf("Proper noun: %s\n", word_arr[i]);
 			}
 			#ifdef PRINT_HARD_WORDS
 				else if (PRINT_HARD_WORDS)
@@ -166,15 +181,11 @@ double assess_readability(FILE *text_file)
 	free(buf_line);
 
 	hashtable_delete(easy_words);
-	hashtable_delete(proper_nouns);
-
-
 	free(easy_words);
 
+	hashtable_delete(proper_nouns);
 	free(proper_nouns);
 
-
-	// TODO: Place this report functionality into its own function
 	if (total_sentences == 0 || total_words < 5)
 	{
 		printf("Invalid input. Enter at least one sentence"
@@ -195,14 +206,8 @@ double assess_readability(FILE *text_file)
 	if (diff_pct > 5.0)
 		score += 3.6365;
 
-	printf("Dale-Chall score of %.2f\n", score);
-
-	printf("Breakdown: %d hard of %d words, %d sentences.\n avg. "
-		"%2.f words per sentence. %.2f%% difficult words.\n", 
-		difficult_words, total_words, total_sentences, 
-		words_per_sent, diff_pct);
-
-	print_score_bracket(score);
+	print_report( difficult_words, total_words, 
+		total_sentences, words_per_sent, diff_pct, score);
 
 	// Get the completion time
 	clock_gettime(CLOCK_REALTIME, &res);
