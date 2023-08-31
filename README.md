@@ -17,18 +17,14 @@ readability ~/Documents/story.txt
 # Example Output
 
 ```sh
-./readability testdata/gettysburg
-testdata/gettysburg
+./readability testdata/modelt4
+READABILITY OF "testdata/modelt4"
 ==== Breakdown ====
-HARD WORDS : 38
-TOTAL WORDS: 270
-SENTENCES  : 10
-AVG. WORDS / SENTENCE : 27.00
-PCT. DIFFICULT WORDS  : 14.07
-DALE-CHALL READABILITY: 7.198
-Easily understood by an average student in 9th or 10th grade.
-Computed score in 24.6647 ms.
+HARD WORDS : 63
+TOTAL WORDS: 535
+SENTENCES  : 44
+AVG. WORDS / SENTENCE : 12.16
+PCT. DIFFICULT WORDS  : 11.78
+DALE-CHALL READABILITY: 6.099
+Easily understood by an average student in 7th or 8th grade.
 ````
-
-
-# Credits
