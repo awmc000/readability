@@ -71,10 +71,12 @@ struct hash_table *get_table_from_list_file(const char * filename, unsigned int 
 
 }
 
-int all_digits(char * s)
+int all_digits(const char * s)
 {
 	for (unsigned int i = 0; i < strlen(s); i++)
 	{
+		if (i > 5)
+			break;
 		if (!isdigit(s[i]))
 		{
 			return 0;

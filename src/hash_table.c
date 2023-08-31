@@ -116,16 +116,21 @@ int hashtable_contains(struct hash_table *ht, char * search_key)
 struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 {
 	struct hash_table *new_ht = realloc(ht, sizeof(struct hash_table) + sizeof(char *) * size);
+	
 	if (new_ht == NULL)
 	{
 		return ht;
+	
 	}
+	
 	ht = new_ht;
 	ht->strings = realloc(ht->strings, sizeof(char *) * size);
 	ht->array_size = size;
+	
 	return ht;
 }
 
+// TODO: break up this very long function
 int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_words)
 {
 	if (fp == NULL)

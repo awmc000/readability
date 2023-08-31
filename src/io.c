@@ -15,7 +15,7 @@ int count_words(char * s)
 
 	for (unsigned int i = 0; i < strlen(s); i++)
 	{
-		if (isalpha(s[i]) || isdigit(s[i]) || s[i] == '-' || s[i] == '\'')
+		if (isalpha(s[i]) || isdigit(s[i]) || s[i] == '\'')
 		{
 			if (!started)
 			{
