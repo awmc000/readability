@@ -18,6 +18,9 @@ int assess_electoralcollege3();
 int assess_modelt4();
 int assess_raisedbydogs4();
 int assess_alchemy5();
+int assess_nomads6();
+int assess_scientist();
+int assess_gettysburg();
 
 // Main method runs test cases printing results with announce_test
 int main(void)
@@ -33,6 +36,10 @@ int main(void)
 	RUN_TEST(assess_raisedbydogs4);
 
 	RUN_TEST(assess_alchemy5);
+
+	RUN_TEST(assess_scientist);
+
+	RUN_TEST(assess_gettysburg);
 
 	return 0;
 }
@@ -70,4 +77,19 @@ int assess_raisedbydogs4()
 int assess_alchemy5()
 {
 	return test_file_score("testdata/alchemy5", 8.9);
+}
+
+int assess_nomads6()
+{
+	return test_file_score("testdata/nomads6", 9.0);
+}
+
+int assess_scientist()
+{
+	return test_file_score("testdata/scientist", 8.0);
+}
+
+int assess_gettysburg()
+{
+	return test_file_score("testdata/gettysburg", 7.5);
 }
