@@ -114,3 +114,20 @@ makes the database usage more appealing.
 Have been working on memory leaks. Fixed the smallest one: the leak
 of words in the word array. The worst leak is that for some reason
 no strings are deleted successfully from the proper nouns list. 
+
+# Day 15, September 2 2023
+
+Figured out why the program segfaults when reading "oneline". Maybe
+unsurprisingly, it does not segfault when the text is two lines of
+five words each. So the problem must be the file being a single line.
+
+With two lines, it leaks the expected 728 bytes. Still not sure how
+I will prevent those 728 bytes from leaking.
+
+# Day 16, September 3 2023
+
+I have decided that leaking only 768 bytes is acceptable for now. I
+will make a release of dev1, the first prerelease build. Also set up
+mingw64 and made first attempts at compiling for Windows 64 bit. It
+looks like the `regex.h` header may be an obstacle to compatibility,
+but I am not sure yet.
