@@ -20,8 +20,12 @@ int main(int argc, char *argv[])
 	{
 		printf("READABILITY OF \"%s\"\n", argv[1]);
 		FILE *f = fopen(argv[1], "r");
-		assess_readability(f);
-		fclose(f);
+
+		if (f != NULL)
+		{
+			assess_readability(f);
+			fclose(f);
+		}
 		return 0;
 	}
 
