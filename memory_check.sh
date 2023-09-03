@@ -1,4 +1,4 @@
 make
 clear
 valgrind --leak-check=full --show-leak-kinds=all ./readability \
-	testdata/oneline
+	testdata/gettysburg
