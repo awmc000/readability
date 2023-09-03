@@ -32,7 +32,7 @@ void print_score_bracket(double dale_chall_score)
 
 	printf("Easily understood by an average ");
 	
-	char * score_descriptions[] = {
+	const char * score_descriptions[] = {
 		"student in 4th grade or lower.\n",
 		"student in 5th or 6th grade.\n",
 		"student in 7th or 8th grade.\n",
@@ -44,7 +44,8 @@ void print_score_bracket(double dale_chall_score)
 
 	if (dale_chall_score <= 9.9)
 	{
-		printf("%s", score_descriptions[((int) dale_chall_score - 4) % 9]);
+		const char * matching_description = score_descriptions[( (int) dale_chall_score - 4) % 6];
+		printf("%s", matching_description);
 	}
 	else
 	{
