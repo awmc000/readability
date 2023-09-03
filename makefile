@@ -1,8 +1,15 @@
 INCLUDES=-Iinclude/
 
 main : main.o hash_table.o test_utils.o io.o scoring.o
-	gcc -Wall -o readability main.o hash_table.o io.o scoring.o -g
+	gcc -Wall -o readability main.o hash_table.o io.o scoring.o
 	./readability testdata/gettysburg
+
+# x86_64-w64-mingw32-gcc
+win64: src/main.c src/hash_table.c include/hash_table.h \
+include/test_utils.h src/test_utils.c include/io.h src/io.c \
+include/scoring.h
+	x86_64-w64-mingw32-gcc -o readability_win64.exe ${INCLUDES} src/main.c src/hash_table.c \
+	src/test_utils.c src/io.c src/scoring.c
 
 debug: src/main.c src/hash_table.c include/hash_table.h \
 include/test_utils.h src/test_utils.c include/io.h src/io.c \
