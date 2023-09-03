@@ -1,3 +1,13 @@
+/*
+ * io.c
+ *
+ * August 7th, 2023
+ *
+ * Alex McColm
+ *
+ * Implementation of functions for counting words and sentences and
+ * storing words in arrays.
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>

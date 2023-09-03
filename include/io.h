@@ -1,3 +1,13 @@
+/*
+ * io.h
+ *
+ * August 7th, 2023
+ *
+ * Alex McColm
+ *
+ * Functions for counting words and sentences and
+ * storing words in arrays.
+ */
 #ifndef IO_H
 #define IO_H
 
