@@ -13,7 +13,12 @@
 #include <assert.h>
 #include <regex.h>
 
-// DJB hash function by Dan Bernstein of the usergroup "comp.lang.c".
+/**
+ * @brief Generates a hash code for a string. Algorithm by Dan 
+ * Bernstein of usergroup comp.lang.c
+ * @param s Any string
+ * @return Hash code given as an unsigned int
+ **/
 unsigned int djb_hash(char * s)
 {
     unsigned long hash = 5381;
@@ -25,6 +30,12 @@ unsigned int djb_hash(char * s)
     return hash;
 }
 
+/**
+ * @brief Constructs a hash table on the heap with the specified
+ * initial size.
+ * @param initial_size Initial size in elements
+ * @return Pointer to new hash table.
+ **/
 struct hash_table *hashtable_create(size_t initial_size)
 {
 	struct hash_table *new_ht = calloc(1, 
@@ -36,6 +47,13 @@ struct hash_table *hashtable_create(size_t initial_size)
 	new_ht->hash = djb_hash;
 }
 
+/**
+ * @brief Inserts a string into a hash table. Uses linear probing,
+ * failing to insert if MAX_PROBES attempted and failed.
+ * @param ht Pointer to a hash table
+ * @param s Any string
+ * @return 1 for success, 0 for failure.
+ **/
 int hashtable_insert(struct hash_table *ht, char * s)
 {
 	unsigned int s_index = (* ht->hash)(s) % ht->array_size;
@@ -57,6 +75,13 @@ int hashtable_insert(struct hash_table *ht, char * s)
 	return 1;
 }
 
+/**
+ * @brief Searches for an element in a hash table and if found
+ * removes the first matching element.
+ * @param ht Pointer to the hash table
+ * @param s Search key
+ * @return 1 for success or 0 for failure.
+ **/
 int hashtable_remove(struct hash_table *ht, char * s)
 {
 	// Get the hash of the search key
@@ -86,6 +111,13 @@ int hashtable_remove(struct hash_table *ht, char * s)
 
 }
 
+/**
+ * @brief Returns whether or not a hash table contains the search 
+ * key.
+ * @param ht Pointer to the hash table
+ * @param search_key String to find a match for
+ * @return 1 if contained or 0 if not contained or operation failed
+ **/
 int hashtable_contains(struct hash_table *ht, char * search_key)
 {
 	// Get the hash of the search key
@@ -113,6 +145,12 @@ int hashtable_contains(struct hash_table *ht, char * search_key)
 	return 0;
 }
 
+/**
+ * @brief Adjusts the size of a hash table.
+ * @param ht Pointer to the hash table
+ * @param size New size in elements
+ * @return Pointer to the new, resized hash table
+ **/
 struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 {
 	struct hash_table *new_ht = realloc(ht, sizeof(struct hash_table) + sizeof(char *) * size);
