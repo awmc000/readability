@@ -169,6 +169,14 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 }
 
 // TODO: break up this very long function
+/**
+ * @brief Loads a pre-determined number of words from a file
+ * into the specified hash table.
+ * @param ht Pointer to the hash table
+ * @param fp Pointer to a text file
+ * @param num_words Number of words to load
+ * @return 1 for success
+ **/
 int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_words)
 {
 	if (fp == NULL)
@@ -249,6 +257,12 @@ int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_
 	// TODO: implement
 }
 
+/**
+ * @brief Prints the contents of a hash table to a specified
+ * file, eg. a text file, stdout, or stderr.
+ * @param ht Pointer to the hash table
+ * @param fp Pointer to the file
+ **/
 void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 {
 	unsigned int i = 0;
@@ -270,9 +284,13 @@ void hashtable_print_contents(struct hash_table *ht, FILE *fp)
 		}
 	}
 	fputc('\n', fp);
-
 }
 
+/**
+ * @brief Frees every element of a hash table, to prepare for
+ * deletion of the hash table struct itself.
+ * @param ht Pointer to the hash table.
+ **/
 void hashtable_delete(struct hash_table *ht)
 {
 	for (unsigned int i = 0; i < ht->array_size; i++)
