@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash_table.h"
+#include "io.h"
 
 START_TEST(test_hashtable_can_create)
 {
@@ -138,9 +139,123 @@ Suite * hashtable_suite(void)
 	return s;
 }
 
+/* IO tests
+
+int can_count_zero_words();
+int can_count_one_word();
+int can_count_50_words_on_line();
+int can_count_split_word_as_one();
+
+int can_count_zero_sentences();
+int can_count_one_sentence();
+int can_count_split_sentences();
+
+int can_get_words_from_string();
+
+*/
+
+START_TEST(test_io_can_count_zero_words)
+{
+	ck_assert(count_words("") == 0);
+}
+END_TEST
+
+START_TEST(test_io_can_count_one_word)
+{
+	ck_assert(count_words("Hello!") == 1);
+}
+END_TEST
+
+START_TEST(test_io_can_count_50_words_on_line)
+{
+	char * s = "Lorem ipsum dolor sit amet, consectetur\
+	adipiscing elit. Nulla in molestie est. Nulla viverra nisl quis justo \
+	dignissim consectetur. Phasellus sollicitudin lacinia ex eget fermentum.\
+	Proin ac mi dolor. Nam tellus urna, ultricies et sem eu, scelerisque \
+	molestie purus. Praesent dignissim justo et magna vestibulum facilisis.\
+	 Quisque malesuada ex mollis.";
+
+	ck_assert(count_words(s) == 50);
+}
+
+START_TEST(test_io_can_count_split_word_as_one)
+{
+	char *s = ", temper-\n-amental!";
+
+	ck_assert(count_words(s) == 1);
+}
+END_TEST
+
+START_TEST(test_io_can_count_zero_sentences)
+{
+	int result = count_sentences("");
+	printf("sentence count of \"%s\" == %d\n", "", result);
+	ck_assert(result == 0);
+}
+END_TEST
+
+START_TEST(test_io_can_count_one_sentence)
+{
+	int result = count_sentences("Hello!");
+	printf("sentence count of \"%s\" == %d\n", "Hello!", result);
+	ck_assert(result == 1);
+}
+END_TEST
+
+
+START_TEST(test_io_can_count_split_sentences)
+{
+	char * s = "Hello,\n World!.!\n Goodbye,\nMars!!";
+	int result = count_sentences(s);
+	printf("sentence count of \"%s\" == %d\n", s, result);
+	ck_assert(result == 2);
+}
+END_TEST
+
+START_TEST(test_io_can_get_words_from_string)
+{
+	char * s = "Nova is the love of my life"; // 7 words
+	size_t num_words = 7;
+	char ** s_array = calloc(20, sizeof(char *));
+
+	int array_made = words_array_from_string(s, num_words, s_array);
+
+	printf("%ld\n", num_words);
+
+	for (int i = 0; i < num_words; i++)
+	{
+		 printf("%s\n", s_array[i]);
+	}
+
+}
+END_TEST
+
+Suite * io_suite(void)
+{
+	Suite *s;
+	TCase *tc_core;
+
+	s = suite_create("IO");
+
+	tc_core = tcase_create("Core");
+
+	tcase_add_test(tc_core, test_io_can_count_zero_words);
+	tcase_add_test(tc_core, test_io_can_count_one_word);
+	tcase_add_test(tc_core, test_io_can_count_50_words_on_line);
+	tcase_add_test(tc_core, test_io_can_count_split_word_as_one);
+	tcase_add_test(tc_core, test_io_can_count_zero_sentences);
+	tcase_add_test(tc_core, test_io_can_count_one_sentence);
+	tcase_add_test(tc_core, test_io_can_count_split_sentences);
+	tcase_add_test(tc_core, test_io_can_get_words_from_string);
+	suite_add_tcase(s, tc_core);
+
+	return s;
+}
+
+
 int main(void)
 {
-	int number_failed;
+	int number_failed = 0;
 	Suite *s;
 	SRunner *sr;
 
@@ -149,8 +264,18 @@ int main(void)
 	sr = srunner_create(s);
 
 	srunner_run_all(sr, CK_NORMAL);
-	number_failed = srunner_ntests_failed(sr);
+	number_failed += srunner_ntests_failed(sr);
 	srunner_free(sr);
+
+	// IO suite
+
+	s = io_suite();
+	sr = srunner_create(s);
+
+	srunner_run_all(sr, CK_NORMAL);
+	number_failed += srunner_ntests_failed(sr);
+	srunner_free(sr);
+
 
 	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
