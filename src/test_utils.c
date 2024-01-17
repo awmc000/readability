@@ -4,8 +4,6 @@
 
 typedef long nanosecond;
 
-// TODO: Reduce duplication of PASS/FAIL prints, put that in this function
-// by turning all the test functions above ^ to return int success or fail.
 void announce_test(int count, char * name, int test(void))
 {
 	

@@ -56,9 +56,6 @@ int trie_insert(struct TrieNode * trie, const char * str)
 	}
 
 	next->is_terminal = 1;
-
-	printf("{%d}\n", next != NULL);
-
 	return -1;
 }
 
@@ -71,22 +68,25 @@ int trie_contains(struct TrieNode * trie, const char * search_key)
 	return (subtrie != NULL) && (sub_trie->is_terminal);
 }
 
-// test driver
-int main(void)
+void trie_destroy(struct TrieNode * trie)
 {
+	for (int i = 0; i < ALPHABET_SIZE; i++)
+	{
+		if (trie->links[i] != NULL)
+			trie_destroy(trie->links[i]);
+	}
 
-	struct TrieNode * root_node = create_trie_node();
-	trie_insert(root_node, "ace");
-	trie_insert(root_node, "aced");
-	trie_insert(root_node, "far");
-	trie_insert(root_node, "yes");
+	free(trie);
 
-//	printf("%d\n", subtrie(root_node, "a")->links[3] != NULL);
-
-	printf("%d\n", trie_contains(root_node, "ace"));
-	printf("%d\n", trie_contains(root_node, "aced"));
-	printf("%d\n", trie_contains(root_node, "far"));
-	printf("%d\n", trie_contains(root_node, "yes"));
-
-	return 0;
+	return;
 }
+
+// int main(void)
+// {
+// 	struct TrieNode * root = create_trie_node();
+// 	trie_insert(root, "hello world");
+// 	trie_insert(root, "hello");
+// 	trie_destroy(root);
+
+// 	return 0;
+// }

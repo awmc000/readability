@@ -46,4 +46,9 @@ int trie_insert(struct TrieNode * trie, const char * value);
  **/
 int trie_contains(struct TrieNode * trie, const char * search_key);
 
+/**
+ * @brief Recursively frees every element in a Trie.
+ **/
+void trie_destroy(struct TrieNode * trie);
+
 #endif // TRIE_H
