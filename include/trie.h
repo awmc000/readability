@@ -29,7 +29,7 @@ struct TrieNode * create_trie_node();
  * @return Pointer to the TrieNode representing the last letter
  * in the string or NULL if not found.
  **/
-struct TrieNode * subtrie(const char * search_key);
+struct TrieNode * subtrie(struct TrieNode * trie, const char * search_key);
 
 /**
  * @brief Adds a string to a Trie.

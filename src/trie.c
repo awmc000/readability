@@ -17,6 +17,19 @@ struct TrieNode * create_trie_node()
 	return calloc(1, sizeof(struct TrieNode));
 }
 
+struct TrieNode * subtrie(struct TrieNode * trie, const char * search_key)
+{
+	while (*search_key != '\0')
+	{
+		trie = trie->links[char_to_index(*search_key)];
+		search_key++;
+		if (trie == NULL)
+			return NULL;
+	}
+	return trie;
+
+}
+
 int trie_insert(struct TrieNode * trie, const char * str)
 {
 	struct TrieNode * curr = trie;
@@ -24,6 +37,7 @@ int trie_insert(struct TrieNode * trie, const char * str)
 
 	while (*str != '\0')
 	{
+		// TODO: Use existing link instead of overwriting!
 		// Create a node for the next letter
 		next = create_trie_node(*str);
 
@@ -47,27 +61,29 @@ int trie_insert(struct TrieNode * trie, const char * str)
 
 int trie_contains(struct TrieNode * trie, const char * search_key)
 {
-	return -1;
+	struct TrieNode * sub_trie = subtrie(trie, search_key);
+	if (sub_trie == NULL)
+		return 0;
+
+	return (subtrie != NULL) && (sub_trie->is_terminal);
 }
 
 // test driver
 int main(void)
 {
-	printf("%c: %d\n", ' ', char_to_index(' '));
-
-	for (int i = 'A'; i <= 'Z'; i++)
-	{
-		printf("%c: %d\n", i, char_to_index(i));
-	}
 
 	struct TrieNode * root_node = create_trie_node();
 	trie_insert(root_node, "ace");
+	trie_insert(root_node, "aced");
+	trie_insert(root_node, "far");
+	trie_insert(root_node, "yes");
 
-	printf("%d %d %d %d\n",
-		root_node->links[1] != NULL,
-		root_node->links[1]->links[3] != NULL,
-		root_node->links[1]->links[3]->links[5] != NULL,
-		root_node->links[25] == NULL);
+//	printf("%d\n", subtrie(root_node, "a")->links[3] != NULL);
+
+	printf("%d\n", trie_contains(root_node, "ace"));
+	printf("%d\n", trie_contains(root_node, "aced"));
+	printf("%d\n", trie_contains(root_node, "far"));
+	printf("%d\n", trie_contains(root_node, "yes"));
 
 	return 0;
 }
