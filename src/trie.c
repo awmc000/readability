@@ -37,12 +37,15 @@ int trie_insert(struct TrieNode * trie, const char * str)
 
 	while (*str != '\0')
 	{
-		// TODO: Use existing link instead of overwriting!
-		// Create a node for the next letter
-		next = create_trie_node(*str);
+		int index = char_to_index(*str);
+		// Find or Create a node for the next letter
+		if (curr->links[index] == NULL)
+			next = create_trie_node(*str);
+		else
+			next = curr->links[index];
 
 		// Add it to the links of the current node
-		curr->links[char_to_index(*str)] = next;
+		curr->links[index] = next;
 		curr->num_links++;
 
 		// The next node is the new current node
