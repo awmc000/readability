@@ -39,18 +39,5 @@ test: ${SOURCES} src/test.c ${HEADERS}
 	gcc ${INCLUDES} ${SOURCES} src/test.c -o test -lcheck -lm -lsubunit
 	./test
 
-test_ht: src/hash_table_test.c src/hash_table.c include/hash_table.h include/test_utils.h \
-src/test_utils.c
-	gcc ${INCLUDES} -o test_ht src/hash_table_test.c src/hash_table.c src/test_utils.c -g
-	./test_ht
-
-test_io: src/io.c include/io.h src/io_test.c src/test_utils.c include/test_utils.h
-	gcc ${INCLUDES} -g -o test_io src/io.c src/io_test.c src/test_utils.c
-	./test_io
-
-test_scoring: src/scoring_test.c scoring.o io.o test_utils.o hash_table.o
-	gcc ${INCLUDES} -g -o test_scoring src/scoring_test.c scoring.o io.o test_utils.o hash_table.o
-	./test_scoring
-
 clean:
 	rm -f readability main.o hash_table.o io.o scoring.o test_utils.o test_ht test_io test_scoring debug

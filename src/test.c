@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "hash_table.h"
 #include "io.h"
+#include "scoring.h"
 
 START_TEST(test_hashtable_can_create)
 {
@@ -252,6 +253,94 @@ Suite * io_suite(void)
 	return s;
 }
 
+/*
+START_TEST(test_scoringroysullivan3();
+START_TEST(test_scoringelectoralcollege3();
+START_TEST(test_scoringmodelt4();
+START_TEST(test_scoringraisedbydogs4();
+START_TEST(test_scoringalchemy5();
+START_TEST(test_scoringnomads6();
+START_TEST(test_scoringscientist();
+START_TEST(test_scoringgettysburg();
+*/
+int test_file_score(const char * filename, double max_acceptable_score)
+{
+	FILE *fp = fopen(filename, "r");
+
+	double score = assess_readability(fp);
+	fclose(fp);
+	return (score <= max_acceptable_score);
+}
+
+START_TEST(test_scoring_roysullivan)
+{
+	ck_assert(test_file_score("testdata/roysullivan3", 5.9));
+}
+END_TEST
+
+START_TEST(test_scoring_electoralcollege)
+{
+	ck_assert(test_file_score("testdata/electoralcollege3", 7.9));
+}
+END_TEST
+
+START_TEST(test_scoring_modelt)
+{
+	ck_assert(test_file_score("testdata/modelt4", 6.9));
+}
+END_TEST
+
+START_TEST(test_scoring_raisedbydogs)
+{
+	ck_assert(test_file_score("testdata/raisedbydogs4", 6.9));
+}
+END_TEST
+
+START_TEST(test_scoring_alchemy)
+{
+	ck_assert(test_file_score("testdata/alchemy5", 8.9));
+}
+END_TEST
+
+START_TEST(test_scoring_nomads)
+{
+	ck_assert(test_file_score("testdata/nomads6", 9.0));
+}
+END_TEST
+
+START_TEST(test_scoring_scientist)
+{
+	ck_assert(test_file_score("testdata/scientist", 8.0));
+}
+END_TEST
+
+START_TEST(test_scoring_gettysburg)
+{
+	ck_assert(test_file_score("testdata/gettysburg", 7.5));
+}
+END_TEST
+
+Suite * scoring_suite(void)
+{
+	Suite *s;
+	TCase *tc_core;
+
+	s = suite_create("Scoring");
+
+	tc_core = tcase_create("Core");
+
+	tcase_add_test(tc_core, test_scoring_roysullivan);
+	tcase_add_test(tc_core, test_scoring_electoralcollege);
+	tcase_add_test(tc_core, test_scoring_modelt);
+	tcase_add_test(tc_core, test_scoring_raisedbydogs);
+	tcase_add_test(tc_core, test_scoring_alchemy);
+	tcase_add_test(tc_core, test_scoring_nomads);
+	tcase_add_test(tc_core, test_scoring_scientist);
+	tcase_add_test(tc_core, test_scoring_gettysburg);
+	suite_add_tcase(s, tc_core);
+
+	return s;
+}
 
 int main(void)
 {
@@ -268,8 +357,15 @@ int main(void)
 	srunner_free(sr);
 
 	// IO suite
-
 	s = io_suite();
+	sr = srunner_create(s);
+
+	srunner_run_all(sr, CK_NORMAL);
+	number_failed += srunner_ntests_failed(sr);
+	srunner_free(sr);
+
+	// scoring suite
+	s = scoring_suite();
 	sr = srunner_create(s);
 
 	srunner_run_all(sr, CK_NORMAL);
