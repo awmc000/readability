@@ -253,16 +253,6 @@ Suite * io_suite(void)
 	return s;
 }
 
-/*
-START_TEST(test_scoringroysullivan3();
-START_TEST(test_scoringelectoralcollege3();
-START_TEST(test_scoringmodelt4();
-START_TEST(test_scoringraisedbydogs4();
-START_TEST(test_scoringalchemy5();
-START_TEST(test_scoringnomads6();
-START_TEST(test_scoringscientist();
-START_TEST(test_scoringgettysburg();
-*/
 int test_file_score(const char * filename, double max_acceptable_score)
 {
 	FILE *fp = fopen(filename, "r");
