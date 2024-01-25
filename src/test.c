@@ -11,6 +11,7 @@
 #include "hash_table.h"
 #include "io.h"
 #include "scoring.h"
+#include "trie.h"
 
 START_TEST(test_hashtable_can_create)
 {
@@ -332,6 +333,103 @@ Suite * scoring_suite(void)
 	return s;
 }
 
+// Trie suite
+
+START_TEST(test_trie_creation)
+{
+	struct TrieNode * trie_root = create_trie_node();
+
+	ck_assert(trie_root != NULL);
+}
+END_TEST
+
+START_TEST(test_trie_insertion)
+{
+	struct TrieNode * trie_root = create_trie_node();
+
+	trie_insert(trie_root, "hello");	
+
+	ck_assert(trie_contains(trie_root, "hello"));
+}
+END_TEST
+
+START_TEST(test_trie_overlapping_insertion)
+{
+	struct TrieNode * trie_root = create_trie_node();
+
+	trie_insert(trie_root, "hello");
+	trie_insert(trie_root, "hell");
+	trie_insert(trie_root, "he");
+
+	ck_assert(trie_contains(trie_root, "hello"));
+	ck_assert(trie_contains(trie_root, "hell"));
+	ck_assert(trie_contains(trie_root, "he"));
+}
+END_TEST
+
+START_TEST(test_trie_subtrie)
+{
+
+}
+END_TEST
+
+START_TEST(test_trie_large_input)
+{
+	const char *words[] = {
+	"apple", "banana", "cherry", "dog", "elephant", "flower", "guitar", 
+	"house", "igloo", "jungle", "kangaroo", "lemon", "mountain", 
+	"notebook", "ocean", "penguin", "quilt", "rainbow", "sunset", "tiger",
+	"umbrella", "violet", "waterfall", "xylophone", "yellow", "zebra", 
+	"airplane", "basketball", "candle", "diamond", "eagle", "fountain", 
+	"giraffe", "happiness", "icecream", "jazz", "kiwi", "lighthouse", 
+	"moonlight", "noodle","orchestra", "puzzle", "quasar", "rhythm", 
+	"sunflower", "trampoline", "unicorn", "vortex", "whisper", "xylograph",
+	"yo-yo", "zephyr", "astronomy", "broccoli", "carousel", "dolphin", 
+	"enigma", "fantasy", "gazelle", "harmony", "illusion", "jubilee", 
+	"kaleidoscope", "lullaby", "mermaid", "nostalgia", "oblivion", 
+	"pandemonium", "quicksilver", "reverie", "serendipity", "triumph", 
+	"utopia", "volcano", "whimsical", "xanadu", "yearning", "zenith", 
+	"ambrosia", "blossom", "cacophony", "dexterity", "ephemeral", 
+	"fandango", "gossamer", "halcyon", "insouciant", "juxtapose", 
+	"kismet", "labyrinth", "mellifluous", "nirvana", "opulent", 
+	"quintessence", "resplendent", "serene", "talisman", "umbrage", 
+	"vivid", "wanderlust", "xenial", "yonder", "zephyr", "acquiesce", 
+	"benevolent", "cacophony", "dawdle", "effervescent", "felicity", 
+	"garrulous", "higgledy-piggledy", "indefatigable", "juxtapose", 
+	"kaleidoscope", "loquacious", "mellifluous", "noodle", "obfuscate", 
+	"plethora", "quixotic", "resplendent", "serendipity", "talisman", 
+	"ubiquitous", "vexatious", "whimsical", "xanadu", "yonder", "zeppelin"
+	};
+	const int num_words = 127;
+
+	struct TrieNode * trie_root = create_trie_node();
+
+	for (int i = 0; i < num_words; i++)
+		trie_insert(trie_root, words[i]);
+
+	for (int i = 0; i < num_words; i++)
+		ck_assert(trie_contains(trie_root, words[i]));
+}
+END_TEST
+
+Suite * trie_suite(void)
+{
+	Suite *s;
+	TCase *tc_core;
+
+	s = suite_create("Trie");
+
+	tc_core = tcase_create("Core");
+
+	tcase_add_test(tc_core, test_trie_creation);
+	tcase_add_test(tc_core, test_trie_insertion);
+	tcase_add_test(tc_core, test_trie_overlapping_insertion);
+	tcase_add_test(tc_core, test_trie_subtrie);
+	tcase_add_test(tc_core, test_trie_large_input);
+	suite_add_tcase(s, tc_core);
+
+	return s;
+}
 int main(void)
 {
 	int number_failed = 0;
@@ -362,6 +460,13 @@ int main(void)
 	number_failed += srunner_ntests_failed(sr);
 	srunner_free(sr);
 
+	// trie suite
+	s = trie_suite();
+	sr = srunner_create(s);
+
+	srunner_run_all(sr, CK_NORMAL);
+	number_failed += srunner_ntests_failed(sr);
+	srunner_free(sr);
 
 	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
