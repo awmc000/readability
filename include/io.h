@@ -32,4 +32,12 @@ int count_sentences(char * s);
  */
 int words_array_from_string(char * s, size_t num_words, char ** s_array);
 
+/*
+ * Given a string and memory locations for the array size and array itself,
+ * stores the words in the array, determining how many there are and placing
+ * that quantity in the array_size variable.
+ */
+void extract_words(char * str, int ** array_size, char ** allocate_at);
+
+
 #endif // IO_H

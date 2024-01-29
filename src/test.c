@@ -12,6 +12,7 @@
 #include "io.h"
 #include "scoring.h"
 #include "trie.h"
+#include "util.h"
 
 START_TEST(test_hashtable_can_create)
 {
@@ -232,6 +233,24 @@ START_TEST(test_io_can_get_words_from_string)
 }
 END_TEST
 
+START_TEST(test_io_can_extract_words)
+{
+	char * sent = "hello world goodbye mars";
+	int ** array_size = calloc(1, sizeof(int *));
+	*array_size = calloc(1, sizeof(int));
+	char ** array = calloc(1, sizeof(char *));
+
+	extract_words(sent, array_size, array);
+
+	ck_assert_int_eq(**array_size, 4);
+	ck_assert_str_eq(array[0], "hello");
+	ck_assert_str_eq(array[1], "world");
+	ck_assert_str_eq(array[2], "goodbye");
+	ck_assert_str_eq(array[3], "mars");
+}
+END_TEST
+
+
 Suite * io_suite(void)
 {
 	Suite *s;
@@ -249,6 +268,7 @@ Suite * io_suite(void)
 	tcase_add_test(tc_core, test_io_can_count_one_sentence);
 	tcase_add_test(tc_core, test_io_can_count_split_sentences);
 	tcase_add_test(tc_core, test_io_can_get_words_from_string);
+	tcase_add_test(tc_core, test_io_can_extract_words);
 	suite_add_tcase(s, tc_core);
 
 	return s;

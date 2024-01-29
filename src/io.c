@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "io.h"
+#include "util.h"
+
 
 int count_words(char * s)
 {
@@ -78,8 +80,42 @@ int count_sentences(char * s)
 	return count;
 }
 
+
+void extract_words(char * str, int ** array_size, char ** allocate_at)
+{
+	// Count the number of words in the array.
+	int words = count_words(str);
+
+	// Allocate space for words个 strings at given address.
+	allocate_at = calloc(words, sizeof(char *));
+
+	// Set array size.
+	**array_size = words;
+
+	// Iterate over string inserting words to the array.
+	int words_inserted = 0;
+	
+	int position = 0;
+
+	while (words_inserted < words)
+	{
+		// pass any non alpha chars
+		while (!isalpha( * (str + position) ))
+			position++;		
+
+		// run extract_word on str + position
+		char * next_word = extract_word(str + position);
+
+		// move past the current word
+		str += strlen(next_word);
+
+		words_inserted++;
+	}
+}
+
 int words_array_from_string(char * s, size_t num_words, char ** s_array)
 {
+	// TODO: eliminate use of Regex, just iterate and use ctype
 	// set up word regex pattern
 	regex_t word_re;
 
