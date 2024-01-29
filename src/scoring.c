@@ -61,7 +61,7 @@ struct hash_table *get_table_from_list_file(const char * filename, unsigned int 
 	// Load file of Lorge easy words list into hash table.
 	FILE * list_fp = fopen(filename, "r");
 	
-	int load_success = hashtable_load_words_from_file(list_table, 
+	int load_success = hashtable_load_lines_from_file(list_table, 
 		list_fp, words);
 	
 	handle_load(load_success, filename);

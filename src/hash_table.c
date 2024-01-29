@@ -12,6 +12,10 @@
 #include <string.h>
 #include <assert.h>
 #include <regex.h>
+#include <ctype.h>
+
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 /**
  * @brief Generates a hash code for a string. Algorithm by Dan 
@@ -168,7 +172,20 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 	return ht;
 }
 
-// TODO: break up this very long function
+char * extract_word(regmatch_t matches[1], char * buf_line)
+{
+	char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
+		
+	// Copy this_word from match to new string char by char
+	for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
+		this_word[i - matches[0].rm_so] = buf_line[i];
+
+	// Add null byte to this_word
+	this_word[matches[0].rm_eo - matches[0].rm_so] = '\0';
+
+	return this_word;
+}
+
 /**
  * @brief Loads a pre-determined number of words from a file
  * into the specified hash table.
@@ -181,7 +198,7 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 {
 	if (fp == NULL)
 	{
-		printf("Cannot load a null file pointer!\n");
+		fprintf(stderr, "Cannot load a null file pointer!\n");
 		return 0;
 	}
 
@@ -200,11 +217,10 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 		return 0;
 	}
 
-	
-
 	// set up word regex pattern
 	regex_t word_re;
 
+	// Compiles the expression at word_re to be ready for regexec() searches.
 	int word_comp = regcomp(&word_re, "[0-9A-Za-z']+", REG_EXTENDED);
 	
 	assert(word_comp == 0);
@@ -213,48 +229,90 @@ int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_
 
 	while ( getline(&buf_line, &buf_size, fp) != -1 )
 	{
-		// get words from line
+		// Get words from line
 		regmatch_t matches[1];
-
+		
+		// Execute the search
 		word_comp = regexec(&word_re, buf_line,
-							sizeof(matches) / sizeof(matches[0]),
-							(regmatch_t *) &matches, 0);
+			sizeof(matches) / sizeof(matches[0]),
+			(regmatch_t *) &matches, 0);
 		
-		// allocate string
-		char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
-		
-		for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
-		{
-			this_word[i - matches[0].rm_so] = buf_line[i];
-		}
+		// Helper function allocates and copies word
+		char * this_word = extract_word(matches, buf_line);
 
-		this_word[matches[0].rm_eo - matches[0].rm_so] = '\0';
-		
-		// put in word array
+		// Put in word array
 		word_array[words] = this_word;
 		words++;
 	}
-
+	
 	for (int i = 0; i < words; i++)
-	{
 		hashtable_insert(ht, word_array[i]);
-	}
 
-	// Free the memory used by the regular expression
+	// Free regex, line buffer, and word array.
 	regfree(&word_re);
-
-	// Free the line buffer
 	free(buf_line);
-
-	// Free the array
 	free(word_array);
 
 	return 1;
 }
 
-int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_lines)
+int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_words)
 {
-	// TODO: implement
+	if (fp == NULL)
+	{
+		fprintf(stderr, "Cannot load a null file pointer!\n");
+		return 0;
+	}
+
+	// Set up buffer for file
+	char * buf_line = calloc(256, sizeof(char));
+	size_t buf_size = 0;
+
+	// Set up string array for words parsed from file
+	char ** word_array = calloc(num_words, sizeof(char *));
+
+	if (word_array == NULL)
+	{
+		printf("Failed to allocate word_array for %lu words!", num_words);
+		free(buf_line);
+		free(word_array);
+		return 0;
+	}
+
+	int words = 0;
+
+	while ( getline(&buf_line, &buf_size, fp) != -1 )
+	{
+		char * this_word;
+		
+		// Count number of chars before newline
+		int chars = 0;
+		
+		for (char * c = buf_line; !iscntrl(*c); ++c)
+			chars++;
+
+		// Allocate this_word with that many plus null byte
+		this_word = calloc(chars + 1, sizeof(char));
+
+		// Copy over
+		for (int i = 0; i < chars; i++)
+			this_word[i] = buf_line[i];
+
+		// Add null byte
+		this_word[chars] = '\0';
+
+		word_array[words] = this_word;
+		words++;
+
+	}
+
+	for (int i = 0; i < words; i++)
+		hashtable_insert(ht, word_array[i]);
+
+	// Free regex, line buffer, and word array.
+	// regfree(&word_re);
+	free(buf_line);
+	free(word_array);
 }
 
 /**
