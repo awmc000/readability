@@ -8,14 +8,11 @@
  * Implementation of the header file `hash_table.h`.
  */
 #include "hash_table.h"
+#include "util.h"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <regex.h>
 #include <ctype.h>
-
-#define PCRE2_CODE_UNIT_WIDTH 8
-#include <pcre2.h>
 
 /**
  * @brief Generates a hash code for a string. Algorithm by Dan 
@@ -172,20 +169,6 @@ struct hash_table * hashtable_resize(struct hash_table *ht, size_t size)
 	return ht;
 }
 
-char * extract_word(regmatch_t matches[1], char * buf_line)
-{
-	char *this_word = calloc(matches[0].rm_eo - matches[0].rm_so + 1, sizeof(char));
-		
-	// Copy this_word from match to new string char by char
-	for (unsigned int i = matches[0].rm_so; i < matches[0].rm_eo; i++)
-		this_word[i - matches[0].rm_so] = buf_line[i];
-
-	// Add null byte to this_word
-	this_word[matches[0].rm_eo - matches[0].rm_so] = '\0';
-
-	return this_word;
-}
-
 int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_words)
 {
 	if (fp == NULL)
@@ -213,34 +196,14 @@ int hashtable_load_lines_from_file(struct hash_table *ht, FILE * fp, size_t num_
 
 	while ( getline(&buf_line, &buf_size, fp) != -1 )
 	{
-		char * this_word;
-		
-		// Count number of chars before newline
-		int chars = 0;
-		
-		for (char * c = buf_line; !iscntrl(*c); ++c)
-			chars++;
-
-		// Allocate this_word with that many plus null byte
-		this_word = calloc(chars + 1, sizeof(char));
-
-		// Copy over
-		for (int i = 0; i < chars; i++)
-			this_word[i] = buf_line[i];
-
-		// Add null byte
-		this_word[chars] = '\0';
-
+		char * this_word = extract_word(buf_line);
 		word_array[words] = this_word;
 		words++;
-
 	}
 
 	for (int i = 0; i < words; i++)
 		hashtable_insert(ht, word_array[i]);
 
-	// Free regex, line buffer, and word array.
-	// regfree(&word_re);
 	free(buf_line);
 	free(word_array);
 }
