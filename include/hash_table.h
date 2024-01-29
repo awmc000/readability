@@ -53,13 +53,6 @@ int hashtable_contains(struct hash_table *ht, char * search_key);
 struct hash_table *hashtable_resize(struct hash_table *ht, size_t size);
 
 /**
- * Loads all words from the file stream `fp` to EOF. A word is a series of
- * chars containing letters of the alphabet or numbers, and possibly hyphens.
- * Eg. "Hello", "1945", "3rd", "tip-top".  
- **/
-int hashtable_load_words_from_file(struct hash_table *ht, FILE * fp, size_t num_words);
-
-/**
  * Loads all lines from the file stream `fp` up to EOF into `ht`.
  * Newlines are not added. Should be faster than load_words_from_file
  * for list files which have just a single word separated by 

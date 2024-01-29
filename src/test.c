@@ -116,7 +116,7 @@ START_TEST(test_hashtable_can_load_file)
 
 	ck_assert(f_dale_list != NULL);
 
-	hashtable_load_words_from_file(dale_ht, f_dale_list, 3000);
+	hashtable_load_lines_from_file(dale_ht, f_dale_list, 3000);
 
 }
 END_TEST
