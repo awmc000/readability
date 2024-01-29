@@ -412,6 +412,24 @@ START_TEST(test_trie_large_input)
 }
 END_TEST
 
+START_TEST(test_trie_create_from_file)
+{
+	FILE *f_dale_list = fopen("lists/dale3000", "r");
+
+	struct TrieNode * trie_root = trie_from_file(f_dale_list);
+
+	ck_assert(trie_contains(trie_root, "acorn"));
+	ck_assert(trie_contains(trie_root, "firecracker"));
+	ck_assert(trie_contains(trie_root, "large"));
+	ck_assert(trie_contains(trie_root, "remember"));
+	ck_assert(trie_contains(trie_root, "toadstool"));
+	ck_assert(trie_contains(trie_root, "unhappy"));
+	ck_assert(trie_contains(trie_root, "youth"));
+
+	fclose(f_dale_list);
+}
+END_TEST
+
 Suite * trie_suite(void)
 {
 	Suite *s;
@@ -426,6 +444,7 @@ Suite * trie_suite(void)
 	tcase_add_test(tc_core, test_trie_overlapping_insertion);
 	tcase_add_test(tc_core, test_trie_subtrie);
 	tcase_add_test(tc_core, test_trie_large_input);
+	tcase_add_test(tc_core, test_trie_create_from_file);
 	suite_add_tcase(s, tc_core);
 
 	return s;
