@@ -1,7 +1,7 @@
 #include "trie.h"
+#include "util.h"
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdio.h>
 
 int char_to_index(char c)
 {
@@ -81,12 +81,20 @@ void trie_destroy(struct TrieNode * trie)
 	return;
 }
 
-// int main(void)
-// {
-// 	struct TrieNode * root = create_trie_node();
-// 	trie_insert(root, "hello world");
-// 	trie_insert(root, "hello");
-// 	trie_destroy(root);
 
-// 	return 0;
-// }
+struct TrieNode * trie_from_file(FILE * fp)
+{
+	struct TrieNode * trie = create_trie_node();
+
+	// Set up buffer for file
+	char * buf_line = calloc(256, sizeof(char));
+	size_t buf_size = 0;
+
+	while ( getline(&buf_line, &buf_size, fp) != -1 )
+	{
+		char * this_word = extract_word(buf_line);
+		trie_insert(trie, this_word);
+	}
+
+	return trie;	
+}

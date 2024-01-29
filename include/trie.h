@@ -9,6 +9,8 @@
 #ifndef TRIE_H
 #define TRIE_H
 
+#include <stdio.h>
+
 #define ALPHABET_SIZE 27 // a-z plus space
 
 struct TrieNode
@@ -50,5 +52,7 @@ int trie_contains(struct TrieNode * trie, const char * search_key);
  * @brief Recursively frees every element in a Trie.
  **/
 void trie_destroy(struct TrieNode * trie);
+
+struct TrieNode * trie_from_file(FILE * fp);
 
 #endif // TRIE_H
