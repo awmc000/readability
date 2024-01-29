@@ -1,5 +1,5 @@
 INCLUDES=-Iinclude/
-HEADERS=include/hash_table.h include/io.h include/scoring.h include/trie.h include/trie.h
+HEADERS=include/hash_table.h include/io.h include/scoring.h include/trie.h include/util.h
 SOURCES=src/hash_table.c src/io.c src/scoring.c src/trie.c src/util.c
 
 main : main.o hash_table.o io.o scoring.o trie.o util.o
@@ -9,8 +9,7 @@ main : main.o hash_table.o io.o scoring.o trie.o util.o
 # x86_64-w64-mingw32-gcc
 win64: src/main.c src/hash_table.c include/hash_table.h \
 include/io.h src/io.c include/scoring.h
-	x86_64-w64-mingw32-gcc -o readability_win64.exe ${INCLUDES} src/main.c src/hash_table.c \
-	src/test_utils.c src/io.c src/scoring.c
+	x86_64-w64-mingw32-gcc -o readability_win64.exe ${INCLUDES} ${SOURCES}
 
 debug: src/main.c src/hash_table.c include/hash_table.h \
 include/io.h src/io.c include/scoring.h
@@ -41,4 +40,4 @@ test: ${SOURCES} src/test.c ${HEADERS}
 	./test
 
 clean:
-	rm -f readability main.o hash_table.o io.o scoring.o test_utils.o test_ht test_io test_scoring debug
+	rm -f readability main.o hash_table.o io.o scoring.o test_utils.o test_ht test_io test_scoring debug test
